@@ -1,0 +1,50 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/dynamics"
+
+import {
+  "moonbitlang/core/debug",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct AdhesionModel {
+  params : @types.TrainParams
+} derive(Eq, @debug.Debug)
+pub fn AdhesionModel::calculate_coefficient(Self, Double, @types.RailCondition) -> Double
+pub fn AdhesionModel::max_adhesion_deceleration(Self, Double, @types.RailCondition) -> Double
+pub fn AdhesionModel::max_adhesion_force_kn(Self, Double, @types.RailCondition) -> Double
+pub fn AdhesionModel::new(@types.TrainParams) -> Self
+
+pub struct BrakeIntegrator {
+  params : @types.TrainParams
+  adhesion : AdhesionModel
+  davis : DavisCalculator
+  gradient : GradientCalculator
+} derive(Eq, @debug.Debug)
+pub fn BrakeIntegrator::compute_ebd_curve(Self, Double, Double, Double, Double, @types.RailCondition, Double) -> @types.DynamicBrakeCurve
+pub fn BrakeIntegrator::compute_sbd_curve(Self, Double, Double, Double, Double, @types.RailCondition, Double) -> @types.DynamicBrakeCurve
+pub fn BrakeIntegrator::effective_deceleration(Self, Double, Double, @types.RailCondition, Bool, Double) -> Double
+pub fn BrakeIntegrator::new(@types.TrainParams) -> Self
+
+pub struct DavisCalculator {
+  params : @types.TrainParams
+} derive(Eq, @debug.Debug)
+pub fn DavisCalculator::new(@types.TrainParams) -> Self
+pub fn DavisCalculator::resistance_deceleration(Self, Double) -> Double
+pub fn DavisCalculator::specific_resistance_n_per_tonne(Self, Double) -> Double
+pub fn DavisCalculator::total_resistance_kn(Self, Double) -> Double
+
+pub struct GradientCalculator {
+  g : Double
+} derive(Eq, @debug.Debug)
+pub fn GradientCalculator::equivalent_acceleration(Self, Double) -> Double
+pub fn GradientCalculator::equivalent_gradient_force_kn(Self, Double, Double) -> Double
+pub fn GradientCalculator::new() -> Self
+
+// Type aliases
+
+// Traits

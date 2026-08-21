@@ -10,9 +10,10 @@ pub fn verify_no_eoa_overstep_contract(
   current_speed : Double,
   decel : Double,
   eoa_pos : Double,
-  delay_s : Double
+  delay_s : Double,
 ) -> Bool {
-  let brake_dist = current_speed * delay_s + (current_speed * current_speed) / (2.0 * decel)
+  let brake_dist = current_speed * delay_s +
+    current_speed * current_speed / (2.0 * decel)
   let stop_pos = current_pos + brake_dist
   stop_pos <= eoa_pos + 0.001 // 1mm numeric tolerance
 }
@@ -24,7 +25,7 @@ pub fn verify_deceleration_non_degradation_contract(
   decel_at_v1 : Double,
   decel_at_v2 : Double,
   v1 : Double,
-  v2 : Double
+  v2 : Double,
 ) -> Bool {
   if v1 >= v2 {
     decel_at_v1 >= decel_at_v2 - 0.05
@@ -38,9 +39,10 @@ pub fn verify_deceleration_non_degradation_contract(
 /// Guarantees that under escalating overspeed events, safety state severity is strictly non-decreasing.
 pub fn verify_state_escalation_monotonicity_contract(
   prev_state : @types.ATPState,
-  next_state : @types.ATPState
+  next_state : @types.ATPState,
 ) -> Bool {
-  next_state.severity_level() >= prev_state.severity_level() || next_state == @types.ATPState::from_int(1) // Standby reset allowed after full stop
+  next_state.severity_level() >= prev_state.severity_level() ||
+  next_state == @types.ATPState::from_int(1) // Standby reset allowed after full stop
 }
 
 ///|
@@ -48,7 +50,9 @@ pub fn verify_state_escalation_monotonicity_contract(
 /// Asserts that position uncertainty margin never shrinks below physical error accumulation lower bound.
 pub fn verify_odometer_bounds_contract(
   bounds : @types.OdometerBounds,
-  min_expected_margin : Double
+  min_expected_margin : Double,
 ) -> Bool {
-  bounds.confidence_margin >= min_expected_margin && bounds.min_pos <= bounds.nominal_pos && bounds.nominal_pos <= bounds.max_pos
+  bounds.confidence_margin >= min_expected_margin &&
+  bounds.min_pos <= bounds.nominal_pos &&
+  bounds.nominal_pos <= bounds.max_pos
 }

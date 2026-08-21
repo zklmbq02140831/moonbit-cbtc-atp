@@ -1,0 +1,43 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/protection"
+
+import {
+  "moonbitlang/core/debug",
+  "zklmbq02140831/moonbit-cbtc-atp/src/dynamics",
+  "zklmbq02140831/moonbit-cbtc-atp/src/line_profile",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct CeilingSpeedMonitor {
+  config : @types.SystemConfig
+} derive(Eq, @debug.Debug)
+pub fn CeilingSpeedMonitor::evaluate(Self, Double, @types.ProtectionThresholds) -> @types.ATPEvent
+pub fn CeilingSpeedMonitor::new(@types.SystemConfig) -> Self
+
+pub struct OdometerTracker {
+  mut accumulated_pos : Double
+  mut confidence_margin : Double
+  mut prev_timestamp_ms : Int64
+  mut prev_raw_speed : Double
+  slip_ratio_limit : Double
+} derive(Eq, @debug.Debug)
+pub fn OdometerTracker::new(Double, Double, Double) -> Self
+pub fn OdometerTracker::reset_at_balise(Self, Double, Double) -> Unit
+pub fn OdometerTracker::update(Self, Double, Double?, Int64) -> @types.OdometerBounds
+
+pub struct SupervisionEngine {
+  config : @types.SystemConfig
+  params : @types.TrainParams
+  integrator : @dynamics.BrakeIntegrator
+} derive(Eq, @debug.Debug)
+pub fn SupervisionEngine::calculate_thresholds(Self, Double, @line_profile.StaticSpeedProfile, @line_profile.TsrManager, @line_profile.MaResolver, Int64, @types.RailCondition) -> @types.ProtectionThresholds
+pub fn SupervisionEngine::new(@types.SystemConfig, @types.TrainParams) -> Self
+
+// Type aliases
+
+// Traits

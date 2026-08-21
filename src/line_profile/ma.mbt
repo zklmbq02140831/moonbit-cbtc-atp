@@ -18,7 +18,7 @@ pub fn MaResolver::new(timeout_ms : Int64) -> MaResolver {
 pub fn MaResolver::update_ma(
   self : MaResolver,
   ma : @types.MovementAuthority,
-  now_ms : Int64
+  now_ms : Int64,
 ) -> Unit {
   self.current_ma = Some(ma)
   self.last_update_ms = now_ms
@@ -47,7 +47,7 @@ pub fn MaResolver::get_active_eoa(self : MaResolver, now_ms : Int64) -> Double? 
 ///|
 pub fn MaResolver::get_active_target_speed(
   self : MaResolver,
-  now_ms : Int64
+  now_ms : Int64,
 ) -> Double {
   if self.is_expired(now_ms) {
     0.0
@@ -63,7 +63,7 @@ pub fn MaResolver::get_active_target_speed(
 pub fn MaResolver::remaining_distance_to_eoa(
   self : MaResolver,
   current_pos : Double,
-  now_ms : Int64
+  now_ms : Int64,
 ) -> Double {
   match self.get_active_eoa(now_ms) {
     Some(eoa) => eoa - current_pos

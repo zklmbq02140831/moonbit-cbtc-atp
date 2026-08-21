@@ -28,7 +28,7 @@ pub fn TrackSegment::new(
   is_tunnel : Bool,
   switch_id : Int,
   switch_pos : Double,
-  max_switch_speed : Double
+  max_switch_speed : Double,
 ) -> TrackSegment {
   {
     segment_id,
@@ -66,7 +66,7 @@ pub struct GradientSegment {
 pub fn GradientSegment::new(
   start_pos : Double,
   end_pos : Double,
-  value : Double
+  value : Double,
 ) -> GradientSegment {
   { start_pos, end_pos, value }
 }
@@ -85,7 +85,7 @@ pub fn CurvatureSegment::new(
   start_pos : Double,
   end_pos : Double,
   radius : Double,
-  cant : Double
+  cant : Double,
 ) -> CurvatureSegment {
   { start_pos, end_pos, radius, cant }
 }
@@ -102,7 +102,7 @@ pub struct PhysicalSpeedSegment {
 pub fn PhysicalSpeedSegment::new(
   start_pos : Double,
   end_pos : Double,
-  max_speed : Double
+  max_speed : Double,
 ) -> PhysicalSpeedSegment {
   { start_pos, end_pos, max_speed }
 }
@@ -143,7 +143,7 @@ pub fn TrackSwitch::new(
   state : SwitchPosition,
   normal_speed : Double,
   reverse_speed : Double,
-  locked : Bool
+  locked : Bool,
 ) -> TrackSwitch {
   {
     switch_id,
@@ -200,7 +200,7 @@ pub fn BaliseData::new(
   location : Double,
   balise_type : BaliseType,
   direction : Int,
-  telegram_bytes : Array[Int]
+  telegram_bytes : Array[Int],
 ) -> BaliseData {
   { balise_id, group_id, location, balise_type, direction, telegram_bytes }
 }

@@ -16,7 +16,7 @@ pub fn GradientCalculator::new() -> GradientCalculator {
 ///|
 pub fn GradientCalculator::equivalent_acceleration(
   self : GradientCalculator,
-  gradient_per_thousand : Double
+  gradient_per_thousand : Double,
 ) -> Double {
   self.g * (gradient_per_thousand / 1000.0)
 }
@@ -25,7 +25,7 @@ pub fn GradientCalculator::equivalent_acceleration(
 pub fn GradientCalculator::equivalent_gradient_force_kn(
   self : GradientCalculator,
   gradient_per_thousand : Double,
-  mass_tonnes : Double
+  mass_tonnes : Double,
 ) -> Double {
   let accel = self.equivalent_acceleration(gradient_per_thousand)
   let force_n = mass_tonnes * 1000.0 * accel

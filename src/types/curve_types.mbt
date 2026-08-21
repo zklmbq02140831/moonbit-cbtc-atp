@@ -15,7 +15,7 @@ pub fn CurvePoint::new(
   pos : Double,
   speed : Double,
   decel : Double,
-  time : Double
+  time : Double,
 ) -> CurvePoint {
   { position: pos, speed, deceleration: decel, time_to_target: time }
 }
@@ -27,14 +27,14 @@ pub struct DynamicBrakeCurve {
   points : Array[CurvePoint]
   target_position : Double // EOA or TSR target position
   target_speed : Double // m/s at target
-  total_distance : Double // meters from curve start to target
+  mut total_distance : Double // meters from curve start to target
 } derive(Eq, Debug)
 
 ///|
 pub fn DynamicBrakeCurve::new(
   ctype : String,
   target_pos : Double,
-  target_v : Double
+  target_v : Double,
 ) -> DynamicBrakeCurve {
   {
     curve_type: ctype,
@@ -48,9 +48,24 @@ pub fn DynamicBrakeCurve::new(
 ///|
 pub fn DynamicBrakeCurve::add_point(
   self : DynamicBrakeCurve,
-  pt : CurvePoint
+  pt : CurvePoint,
 ) -> Unit {
   self.points.push(pt)
+}
+
+///|
+pub fn DynamicBrakeCurve::set_total_distance(
+  self : DynamicBrakeCurve,
+  dist : Double,
+) -> Unit {
+  self.total_distance = dist
+}
+
+///|
+pub fn DynamicBrakeCurve::get_total_distance(
+  self : DynamicBrakeCurve,
+) -> Double {
+  self.total_distance
 }
 
 ///|
@@ -73,7 +88,7 @@ pub fn ProtectionThresholds::new(
   sbd : Double,
   ebd : Double,
   trip : Double,
-  eoa_margin : Double
+  eoa_margin : Double,
 ) -> ProtectionThresholds {
   {
     position: pos,
@@ -107,7 +122,7 @@ pub fn MovementAuthority::new(
   eoa_pos : Double,
   overlap : Double,
   target_v : Double,
-  route_v : Double
+  route_v : Double,
 ) -> MovementAuthority {
   {
     ma_id,
@@ -139,7 +154,7 @@ pub fn TemporarySpeedRestriction::new(
   end_p : Double,
   limit : Double,
   active : Bool,
-  reason : Int
+  reason : Int,
 ) -> TemporarySpeedRestriction {
   {
     tsr_id: id,

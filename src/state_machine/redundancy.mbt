@@ -14,7 +14,7 @@ pub struct DualChannelVoter {
 pub fn DualChannelVoter::new(
   config : @types.SystemConfig,
   max_v_diff : Double,
-  max_p_diff : Double
+  max_p_diff : Double,
 ) -> DualChannelVoter {
   {
     channel_a_state: AtpStateMachine::new(config),
@@ -33,13 +33,14 @@ pub fn DualChannelVoter::vote(
   state_a : @types.TrainState,
   state_b : @types.TrainState,
   thresh_a : @types.ProtectionThresholds,
-  thresh_b : @types.ProtectionThresholds
+  thresh_b : @types.ProtectionThresholds,
 ) -> @types.ATPState {
   let v_diff = (state_a.speed - state_b.speed).abs()
   let p_diff = (state_a.odometer.nominal_pos - state_b.odometer.nominal_pos).abs()
 
   // Disagree beyond SIL4 bounds triggers HardwareFault
-  if v_diff > self.max_allowed_speed_diff_mps || p_diff > self.max_allowed_pos_diff_m {
+  if v_diff > self.max_allowed_speed_diff_mps ||
+    p_diff > self.max_allowed_pos_diff_m {
     let fail_evt = @types.ATPEvent::from_code(401) // HardwareFailSignal
     let _ = self.channel_a_state.transition(fail_evt, state_a, thresh_a)
     let _ = self.channel_b_state.transition(fail_evt, state_b, thresh_b)

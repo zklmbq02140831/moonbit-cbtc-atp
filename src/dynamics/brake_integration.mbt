@@ -28,7 +28,7 @@ pub fn BrakeIntegrator::effective_deceleration(
   gradient_per_thousand : Double,
   rail : @types.RailCondition,
   is_emergency : Bool,
-  brake_phase_ratio : Double // 0.0 to 1.0 representing brake pressure build-up
+  brake_phase_ratio : Double, // 0.0 to 1.0 representing brake pressure build-up
 ) -> Double {
   let base_decel = if is_emergency {
     self.params.emergency_brake_decel_base
@@ -59,7 +59,7 @@ pub fn BrakeIntegrator::compute_ebd_curve(
   start_pos : Double,
   gradient_per_thousand : Double,
   rail : @types.RailCondition,
-  step_ds : Double
+  step_ds : Double,
 ) -> @types.DynamicBrakeCurve {
   let curve = @types.DynamicBrakeCurve::new("EBD", target_pos, target_speed)
   if start_pos >= target_pos {
@@ -71,14 +71,25 @@ pub fn BrakeIntegrator::compute_ebd_curve(
   let mut curr_v = target_speed
   let mut accum_t = 0.0
 
-  curve.add_point(@types.CurvePoint::new(curr_pos, curr_v, self.effective_deceleration(curr_v, gradient_per_thousand, rail, true, 1.0), 0.0))
+  curve.add_point(
+    @types.CurvePoint::new(
+      curr_pos,
+      curr_v,
+      self.effective_deceleration(
+        curr_v, gradient_per_thousand, rail, true, 1.0,
+      ),
+      0.0,
+    ),
+  )
 
   while curr_pos > start_pos {
     curr_pos = curr_pos - step_ds
     if curr_pos < start_pos {
       curr_pos = start_pos
     }
-    let decel = self.effective_deceleration(curr_v, gradient_per_thousand, rail, true, 1.0)
+    let decel = self.effective_deceleration(
+      curr_v, gradient_per_thousand, rail, true, 1.0,
+    )
     let v_next_sq = curr_v * curr_v + 2.0 * decel * step_ds
     let v_next = v_next_sq.sqrt()
     let avg_v = (curr_v + v_next) / 2.0
@@ -89,7 +100,7 @@ pub fn BrakeIntegrator::compute_ebd_curve(
   }
 
   let delay_margin = curr_v * delay + 0.5 * curr_v * build_t
-  curve.set_total_distance((target_pos - start_pos) + delay_margin)
+  curve.set_total_distance(target_pos - start_pos + delay_margin)
   curve
 }
 
@@ -102,7 +113,7 @@ pub fn BrakeIntegrator::compute_sbd_curve(
   start_pos : Double,
   gradient_per_thousand : Double,
   rail : @types.RailCondition,
-  step_ds : Double
+  step_ds : Double,
 ) -> @types.DynamicBrakeCurve {
   let curve = @types.DynamicBrakeCurve::new("SBD", target_pos, target_speed)
   if start_pos >= target_pos {
@@ -114,14 +125,25 @@ pub fn BrakeIntegrator::compute_sbd_curve(
   let mut curr_v = target_speed
   let mut accum_t = 0.0
 
-  curve.add_point(@types.CurvePoint::new(curr_pos, curr_v, self.effective_deceleration(curr_v, gradient_per_thousand, rail, false, 1.0), 0.0))
+  curve.add_point(
+    @types.CurvePoint::new(
+      curr_pos,
+      curr_v,
+      self.effective_deceleration(
+        curr_v, gradient_per_thousand, rail, false, 1.0,
+      ),
+      0.0,
+    ),
+  )
 
   while curr_pos > start_pos {
     curr_pos = curr_pos - step_ds
     if curr_pos < start_pos {
       curr_pos = start_pos
     }
-    let decel = self.effective_deceleration(curr_v, gradient_per_thousand, rail, false, 1.0)
+    let decel = self.effective_deceleration(
+      curr_v, gradient_per_thousand, rail, false, 1.0,
+    )
     let v_next_sq = curr_v * curr_v + 2.0 * decel * step_ds
     let v_next = v_next_sq.sqrt()
     let avg_v = (curr_v + v_next) / 2.0
@@ -132,6 +154,6 @@ pub fn BrakeIntegrator::compute_sbd_curve(
   }
 
   let delay_margin = curr_v * delay + 0.5 * curr_v * build_t
-  curve.set_total_distance((target_pos - start_pos) + delay_margin)
+  curve.set_total_distance(target_pos - start_pos + delay_margin)
   curve
 }

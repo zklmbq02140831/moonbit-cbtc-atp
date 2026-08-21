@@ -16,7 +16,7 @@ pub fn StaticSpeedProfile::new(
   segments : Array[@types.PhysicalSpeedSegment],
   gradients : Array[@types.GradientSegment],
   curvatures : Array[@types.CurvatureSegment],
-  switches : Array[@types.TrackSwitch]
+  switches : Array[@types.TrackSwitch],
 ) -> StaticSpeedProfile {
   { segments, gradients, curvatures, switches }
 }
@@ -24,7 +24,7 @@ pub fn StaticSpeedProfile::new(
 ///|
 pub fn StaticSpeedProfile::get_physical_limit(
   self : StaticSpeedProfile,
-  position : Double
+  position : Double,
 ) -> Double {
   let mut limit = 1000.0 // high default ceiling
   for i = 0; i < self.segments.length(); i = i + 1 {
@@ -41,7 +41,7 @@ pub fn StaticSpeedProfile::get_physical_limit(
 ///|
 pub fn StaticSpeedProfile::get_gradient(
   self : StaticSpeedProfile,
-  position : Double
+  position : Double,
 ) -> Double {
   for i = 0; i < self.gradients.length(); i = i + 1 {
     let g = self.gradients[i]
@@ -56,7 +56,7 @@ pub fn StaticSpeedProfile::get_gradient(
 pub fn StaticSpeedProfile::get_curvature_speed_limit(
   self : StaticSpeedProfile,
   position : Double,
-  cant_mm : Double
+  cant_mm : Double,
 ) -> Double {
   for i = 0; i < self.curvatures.length(); i = i + 1 {
     let c = self.curvatures[i]
@@ -76,7 +76,7 @@ pub fn StaticSpeedProfile::get_curvature_speed_limit(
 ///|
 pub fn StaticSpeedProfile::get_switch_limit(
   self : StaticSpeedProfile,
-  position : Double
+  position : Double,
 ) -> Double {
   let mut limit = 1000.0
   for i = 0; i < self.switches.length(); i = i + 1 {
@@ -95,7 +95,7 @@ pub fn StaticSpeedProfile::get_switch_limit(
 ///|
 pub fn StaticSpeedProfile::get_effective_limit(
   self : StaticSpeedProfile,
-  position : Double
+  position : Double,
 ) -> Double {
   let phys = self.get_physical_limit(position)
   let curv = self.get_curvature_speed_limit(position, 0.0)

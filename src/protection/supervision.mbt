@@ -12,13 +12,9 @@ pub struct SupervisionEngine {
 ///|
 pub fn SupervisionEngine::new(
   config : @types.SystemConfig,
-  params : @types.TrainParams
+  params : @types.TrainParams,
 ) -> SupervisionEngine {
-  {
-    config,
-    params,
-    integrator: @dynamics.BrakeIntegrator::new(params),
-  }
+  { config, params, integrator: @dynamics.BrakeIntegrator::new(params) }
 }
 
 ///|
@@ -30,7 +26,7 @@ pub fn SupervisionEngine::calculate_thresholds(
   tsr_mgr : @line_profile.TsrManager,
   ma_resolver : @line_profile.MaResolver,
   now_ms : Int64,
-  rail : @types.RailCondition
+  rail : @types.RailCondition,
 ) -> @types.ProtectionThresholds {
   let ssp_limit = ssp.get_effective_limit(train_pos)
   let tsr_limit = tsr_mgr.get_tsr_limit_at(train_pos)
@@ -57,7 +53,7 @@ pub fn SupervisionEngine::calculate_thresholds(
       train_pos,
       grad,
       rail,
-      5.0
+      5.0,
     )
     let sbd_curve = self.integrator.compute_sbd_curve(
       eoa.unwrap(),
@@ -65,35 +61,57 @@ pub fn SupervisionEngine::calculate_thresholds(
       train_pos,
       grad,
       rail,
-      5.0
+      5.0,
     )
 
     let ebd_dynamic_v = get_curve_v_at(ebd_curve, train_pos)
     let sbd_dynamic_v = get_curve_v_at(sbd_curve, train_pos)
 
-    let final_ebd = if ebd_dynamic_v < ebd_speed { ebd_dynamic_v } else { ebd_speed }
-    let final_sbd = if sbd_dynamic_v < sbd_speed { sbd_dynamic_v } else { sbd_speed }
+    let final_ebd = if ebd_dynamic_v < ebd_speed {
+      ebd_dynamic_v
+    } else {
+      ebd_speed
+    }
+    let final_sbd = if sbd_dynamic_v < sbd_speed {
+      sbd_dynamic_v
+    } else {
+      sbd_speed
+    }
     let final_warn = if final_sbd - 0.5 < warn { final_sbd - 0.5 } else { warn }
-    let final_perm = if final_warn - 0.5 < permitted { final_warn - 0.5 } else { permitted }
+    let final_perm = if final_warn - 0.5 < permitted {
+      final_warn - 0.5
+    } else {
+      permitted
+    }
 
     @types.ProtectionThresholds::new(
       train_pos,
-      if final_perm < 0.0 { 0.0 } else { final_perm },
-      if final_warn < 0.0 { 0.0 } else { final_warn },
-      if final_sbd < 0.0 { 0.0 } else { final_sbd },
-      if final_ebd < 0.0 { 0.0 } else { final_ebd },
+      if final_perm < 0.0 {
+        0.0
+      } else {
+        final_perm
+      },
+      if final_warn < 0.0 {
+        0.0
+      } else {
+        final_warn
+      },
+      if final_sbd < 0.0 {
+        0.0
+      } else {
+        final_sbd
+      },
+      if final_ebd < 0.0 {
+        0.0
+      } else {
+        final_ebd
+      },
       trip_speed,
-      eoa_margin
+      eoa_margin,
     )
   } else {
     @types.ProtectionThresholds::new(
-      train_pos,
-      permitted,
-      warn,
-      sbd_speed,
-      ebd_speed,
-      trip_speed,
-      eoa_margin
+      train_pos, permitted, warn, sbd_speed, ebd_speed, trip_speed, eoa_margin,
     )
   }
 }

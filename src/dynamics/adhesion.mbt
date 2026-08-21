@@ -10,17 +10,19 @@ pub struct AdhesionModel {
 
 ///|
 pub fn AdhesionModel::new(params : @types.TrainParams) -> AdhesionModel {
-  { params: params }
+  { params, }
 }
 
 ///|
 pub fn AdhesionModel::calculate_coefficient(
   self : AdhesionModel,
   speed_mps : Double,
-  rail : @types.RailCondition
+  rail : @types.RailCondition,
 ) -> Double {
   let v_kmh = speed_mps * 3.6
-  let mu_base = self.params.adhesion_mu0 * (1.0 + self.params.adhesion_a1 * v_kmh) / (1.0 + self.params.adhesion_a2 * v_kmh)
+  let mu_base = self.params.adhesion_mu0 *
+    (1.0 + self.params.adhesion_a1 * v_kmh) /
+    (1.0 + self.params.adhesion_a2 * v_kmh)
   let mult = rail.adhesion_multiplier()
   mu_base * mult
 }
@@ -29,7 +31,7 @@ pub fn AdhesionModel::calculate_coefficient(
 pub fn AdhesionModel::max_adhesion_force_kn(
   self : AdhesionModel,
   speed_mps : Double,
-  rail : @types.RailCondition
+  rail : @types.RailCondition,
 ) -> Double {
   let mu = self.calculate_coefficient(speed_mps, rail)
   let g = 9.81
@@ -42,7 +44,7 @@ pub fn AdhesionModel::max_adhesion_force_kn(
 pub fn AdhesionModel::max_adhesion_deceleration(
   self : AdhesionModel,
   speed_mps : Double,
-  rail : @types.RailCondition
+  rail : @types.RailCondition,
 ) -> Double {
   let mu = self.calculate_coefficient(speed_mps, rail)
   let g = 9.81

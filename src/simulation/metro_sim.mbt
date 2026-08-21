@@ -41,11 +41,27 @@ pub fn MetroSimulation::new() -> MetroSimulation {
   ]
 
   let switches = [
-    @types.TrackSwitch::new(1, 1500.0, @types.SwitchPosition::from_int(1), 22.22, 9.72, true),
-    @types.TrackSwitch::new(2, 8500.0, @types.SwitchPosition::from_int(2), 22.22, 9.72, true),
+    @types.TrackSwitch::new(
+      1,
+      1500.0,
+      @types.SwitchPosition::from_int(1),
+      22.22,
+      9.72,
+      true,
+    ),
+    @types.TrackSwitch::new(
+      2,
+      8500.0,
+      @types.SwitchPosition::from_int(2),
+      22.22,
+      9.72,
+      true,
+    ),
   ]
 
-  let ssp = @line_profile.StaticSpeedProfile::new(phys_segs, grads, curvs, switches)
+  let ssp = @line_profile.StaticSpeedProfile::new(
+    phys_segs, grads, curvs, switches,
+  )
   let tsr_mgr = @line_profile.TsrManager::new()
   let ma_resolver = @line_profile.MaResolver::new(config.ma_timeout_ms)
 
@@ -64,7 +80,7 @@ pub fn MetroSimulation::run_step(
   self : MetroSimulation,
   train_pos : Double,
   train_speed : Double,
-  now_ms : Int64
+  now_ms : Int64,
 ) -> (@types.ProtectionThresholds, @types.ATPState) {
   let rail = @types.RailCondition::from_int(1) // Dry
   let thresh = self.engine.calculate_thresholds(
@@ -73,10 +89,12 @@ pub fn MetroSimulation::run_step(
     self.tsr_mgr,
     self.ma_resolver,
     now_ms,
-    rail
+    rail,
   )
 
-  let monitor = @protection.CeilingSpeedMonitor::new(@types.SystemConfig::default())
+  let monitor = @protection.CeilingSpeedMonitor::new(
+    @types.SystemConfig::default(),
+  )
   let evt = monitor.evaluate(train_speed, thresh)
 
   let odo = @types.OdometerBounds::new(train_pos, 0.2, false, false)
@@ -89,7 +107,7 @@ pub fn MetroSimulation::run_step(
     1,
     false,
     false,
-    false
+    false,
   )
 
   let next_state = self.fsm.transition(evt, tstate, thresh)

@@ -65,16 +65,13 @@ fn build_node(segs : Array[@types.TrackSegment]) -> SegmentNode {
 ///|
 pub fn SegmentTree::find_at(
   self : SegmentTree,
-  position : Double
+  position : Double,
 ) -> @types.TrackSegment? {
   query_node(self.root, position)
 }
 
 ///|
-fn query_node(
-  node : SegmentNode,
-  position : Double
-) -> @types.TrackSegment? {
+fn query_node(node : SegmentNode, position : Double) -> @types.TrackSegment? {
   match node {
     Leaf(segs) => {
       for i = 0; i < segs.length(); i = i + 1 {
@@ -105,7 +102,7 @@ fn query_node(
 pub fn SegmentTree::query_range(
   self : SegmentTree,
   start_pos : Double,
-  end_pos : Double
+  end_pos : Double,
 ) -> Array[@types.TrackSegment] {
   let result : Array[@types.TrackSegment] = Array::new()
   collect_range(self.root, start_pos, end_pos, result)
@@ -117,7 +114,7 @@ fn collect_range(
   node : SegmentNode,
   start_p : Double,
   end_p : Double,
-  out : Array[@types.TrackSegment]
+  out : Array[@types.TrackSegment],
 ) -> Unit {
   match node {
     Leaf(segs) =>
