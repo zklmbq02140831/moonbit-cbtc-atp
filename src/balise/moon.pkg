@@ -1,0 +1,4 @@
+import {
+  "zklmbq02140831/moonbit-cbtc-atp/src/types" @types,
+  "zklmbq02140831/moonbit-cbtc-atp/src/line_profile" @line_profile,
+}
