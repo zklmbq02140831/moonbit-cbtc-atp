@@ -43,6 +43,65 @@ pub enum ATPState {
 pub fn ATPState::from_int(Int) -> Self
 pub fn ATPState::severity_level(Self) -> Int
 
+pub struct Acceleration {
+  mps2 : Double
+} derive(Eq, @debug.Debug)
+pub fn Acceleration::from_mps2(Double) -> Self
+pub fn Acceleration::to_mps2(Self) -> Double
+
+pub struct AtpHardwareDiagnosticReport {
+  cpu_temp_celsius : Double
+  supply_voltage_v : Double
+  channel_a_alive : Bool
+  channel_b_alive : Bool
+  voter_relay_healthy : Bool
+} derive(Eq, @debug.Debug)
+pub fn AtpHardwareDiagnosticReport::healthy_default() -> Self
+pub fn AtpHardwareDiagnosticReport::is_safe_to_run(Self) -> Bool
+
+pub struct AtpKernelConfig {
+  max_system_speed_mps : Double
+  wheel_diameter_nominal_m : Double
+  wheel_diameter_wear_limit_m : Double
+  tachometer_pulses_per_rev : Int
+  doppler_radar_frequency_hz : Double
+  radar_speed_scale_factor : Double
+  position_confidence_grow_rate : Double
+  max_allowable_slip_ratio : Double
+  max_allowable_skid_ratio : Double
+  service_brake_response_s : Double
+  emergency_brake_response_s : Double
+  pneumatic_pipe_wave_speed : Double
+  atp_cycle_time_ms : Int64
+  watchdog_timeout_ms : Int64
+} derive(Eq, @debug.Debug)
+pub fn AtpKernelConfig::calc_effective_wheel_circumference(Self, Double) -> Double
+pub fn AtpKernelConfig::default_hsr() -> Self
+pub fn AtpKernelConfig::default_metro() -> Self
+
+pub struct AxleCounterDetectorHead {
+  detector_id : Int
+  location_m : Double
+  head_a_pulse_count : Int
+  head_b_pulse_count : Int
+  wheel_direction_forward : Bool
+  sensor_fault : Bool
+} derive(Eq, @debug.Debug)
+pub fn AxleCounterDetectorHead::new(Int, Double) -> Self
+
+pub struct AxleCounterSection {
+  section_id : Int
+  entry_detector_id : Int
+  exit_detector_id : Int
+  mut axles_in : Int
+  mut axles_out : Int
+  mut section_occupied : Bool
+} derive(Eq, @debug.Debug)
+pub fn AxleCounterSection::is_clear(Self) -> Bool
+pub fn AxleCounterSection::new(Int, Int, Int) -> Self
+pub fn AxleCounterSection::record_axle_in(Self) -> Unit
+pub fn AxleCounterSection::record_axle_out(Self) -> Unit
+
 pub struct BaliseData {
   balise_id : Int
   group_id : Int
@@ -53,6 +112,20 @@ pub struct BaliseData {
 } derive(Eq, @debug.Debug)
 pub fn BaliseData::new(Int, Int, Double, BaliseType, Int, Array[Int]) -> Self
 
+pub struct BaliseHeader {
+  q_updown : Int
+  m_version : Int
+  q_media : Int
+  n_pig : Int
+  n_total : Int
+  m_dup : Int
+  m_mcount : Int
+  nid_c : Int
+  nid_bg : Int
+  q_link : Int
+} derive(Eq, @debug.Debug)
+pub fn BaliseHeader::new(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Self
+
 pub enum BaliseType {
   Fixed
   Switchable
@@ -60,6 +133,26 @@ pub enum BaliseType {
   Psd
 } derive(Eq, @debug.Debug)
 pub fn BaliseType::from_int(Int) -> Self
+
+pub struct BlackBoxEventRecord {
+  event_id : Int64
+  timestamp_ms : Int64
+  event_code : Int
+  train_speed_mps : Double
+  train_position_m : Double
+  atp_state_code : Int
+  driver_cab_mode_code : Int
+  brake_status_mask : Int
+  payload_param1 : Double
+  payload_param2 : Double
+} derive(Eq, @debug.Debug)
+pub fn BlackBoxEventRecord::new(Int64, Int64, Int, Double, Double, Int, Int, Int, Double, Double) -> Self
+
+pub struct BrakingCurvePoint {
+  position_m : Double
+  allowed_speed_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn BrakingCurvePoint::new(Double, Double) -> Self
 
 pub enum CabMode {
   AutomaticTrainOperation
@@ -72,6 +165,16 @@ pub enum CabMode {
   SystemFailure
 } derive(Eq, @debug.Debug)
 pub fn CabMode::from_int(Int) -> Self
+
+pub struct CbiRouteStatus {
+  route_id : Int
+  entry_signal_id : Int
+  exit_signal_id : Int
+  aspect : SignalAspect
+  route_locked : Bool
+  detector_locking_active : Bool
+} derive(Eq, @debug.Debug)
+pub fn CbiRouteStatus::new(Int, Int, Int, SignalAspect, Bool, Bool) -> Self
 
 pub struct CurvatureSegment {
   start_pos : Double
@@ -89,6 +192,76 @@ pub struct CurvePoint {
 } derive(Eq, @debug.Debug)
 pub fn CurvePoint::new(Double, Double, Double, Double) -> Self
 
+pub struct DiagnosticRingBuffer {
+  capacity : Int
+  buffer : Array[BlackBoxEventRecord]
+} derive(Eq, @debug.Debug)
+pub fn DiagnosticRingBuffer::new(Int) -> Self
+pub fn DiagnosticRingBuffer::push_record(Self, BlackBoxEventRecord) -> Unit
+pub fn DiagnosticRingBuffer::size(Self) -> Int
+
+pub struct Distance {
+  meters : Double
+} derive(Eq, @debug.Debug)
+pub fn Distance::from_km(Double) -> Self
+pub fn Distance::from_meters(Double) -> Self
+pub fn Distance::to_km(Self) -> Double
+pub fn Distance::to_meters(Self) -> Double
+
+pub struct DmiAreaLayout {
+  area_a_speedometer_width : Int
+  area_b_target_bar_height : Int
+  area_c_driver_msg_rows : Int
+  area_d_controls_active : Bool
+  area_e_mode_icon_id : Int
+  area_f_status_icon_id : Int
+} derive(Eq, @debug.Debug)
+pub fn DmiAreaLayout::era_standard() -> Self
+
+pub enum DmiColorZone {
+  Grey
+  Yellow
+  Orange
+  Red
+  DarkRed
+} derive(Eq, @debug.Debug)
+pub fn DmiColorZone::code(Self) -> Int
+pub fn DmiColorZone::from_code(Int) -> Self
+
+pub struct DmiDisplayState {
+  current_speed_kmh : Double
+  permitted_speed_kmh : Double
+  target_speed_kmh : Double
+  release_speed_kmh : Double
+  distance_to_eoa_m : Double
+  active_mode_name : String
+  atp_status_text : String
+  audible_alarm_active : Bool
+  visual_warning_active : Bool
+  brake_command_active : Bool
+} derive(Eq, @debug.Debug)
+pub fn DmiDisplayState::new(Double, Double, Double, Double, Double, String, String, Bool, Bool, Bool) -> Self
+
+pub struct DmiSpeedometerGauge {
+  current_speed_kmh : Double
+  permitted_speed_kmh : Double
+  warning_speed_kmh : Double
+  sbd_speed_kmh : Double
+  ebd_speed_kmh : Double
+  dial_max_speed_kmh : Double
+  pointer_angle_deg : Double
+  active_color_zone : DmiColorZone
+} derive(Eq, @debug.Debug)
+pub fn DmiSpeedometerGauge::new(Double, ProtectionThresholds, Double) -> Self
+
+pub struct DmiTargetBarGraphic {
+  distance_to_target_m : Double
+  logarithmic_fill_ratio : Double
+  target_speed_mps : Double
+  is_target_visible : Bool
+} derive(Eq, @debug.Debug)
+pub fn DmiTargetBarGraphic::new(Double, Double) -> Self
+
 pub struct DynamicBrakeCurve {
   curve_type : String
   points : Array[CurvePoint]
@@ -101,12 +274,137 @@ pub fn DynamicBrakeCurve::get_total_distance(Self) -> Double
 pub fn DynamicBrakeCurve::new(String, Double, Double) -> Self
 pub fn DynamicBrakeCurve::set_total_distance(Self, Double) -> Unit
 
+pub struct DynamicBrakingCurveHolder {
+  target_position_m : Double
+  target_speed_mps : Double
+  curve_points : Array[BrakingCurvePoint]
+} derive(Eq, @debug.Debug)
+pub fn DynamicBrakingCurveHolder::new(Double, Double, Array[BrakingCurvePoint]) -> Self
+
+pub enum ETCSLevel {
+  Level0
+  Level1
+  Level2
+  Level3
+  LevelNtc
+} derive(Eq, @debug.Debug)
+pub fn ETCSLevel::from_int(Int) -> Self
+
+pub struct EtcsPacket15Data {
+  nid_packet : Int
+  q_dir : Int
+  l_packet : Int
+  q_scale : Int
+  v_ema_mps : Double
+  t_ema_s : Int
+  d_ref_m : Double
+} derive(Eq, @debug.Debug)
+pub fn EtcsPacket15Data::new(Int, Double, Int, Double) -> Self
+
+pub struct EtcsPacket27Data {
+  nid_packet : Int
+  sub_segments : Array[EtcsPacket27SubSegment]
+} derive(Eq, @debug.Debug)
+pub fn EtcsPacket27Data::new(Array[EtcsPacket27SubSegment]) -> Self
+
+pub struct EtcsPacket27SubSegment {
+  d_static_m : Double
+  v_static_mps : Double
+  q_front : Bool
+} derive(Eq, @debug.Debug)
+pub fn EtcsPacket27SubSegment::new(Double, Double, Bool) -> Self
+
+pub struct EtcsPacket3NationalValues {
+  nid_packet : Int
+  v_nvshunt_mps : Double
+  v_nvstff_mps : Double
+  v_nvonsight_mps : Double
+  v_nvlimsuper_mps : Double
+  v_nvunfit_mps : Double
+  v_nvrel_mps : Double
+  d_nvroll_m : Double
+  t_nvovtrp_s : Int
+} derive(Eq, @debug.Debug)
+pub fn EtcsPacket3NationalValues::default() -> Self
+
+pub struct EtcsPacket41Data {
+  nid_packet : Int
+  target_etcs_level : Int
+  d_leveltr_m : Double
+  l_ack_m : Double
+} derive(Eq, @debug.Debug)
+pub fn EtcsPacket41Data::new(Int, Double, Double) -> Self
+
+pub struct EtcsPacket44CustomData {
+  nid_packet : Int
+  nid_xuser : Int
+  payload_bytes : Array[Int]
+} derive(Eq, @debug.Debug)
+pub fn EtcsPacket44CustomData::new(Int, Array[Int]) -> Self
+
+pub enum EuroradioMsgType {
+  Msg3MovementAuthority
+  Msg8Acknowledge
+  Msg15PositionReport
+  Msg16PositionReportAck
+  Msg24GeneralMessage
+  Msg33RadioInfillMA
+  Msg38InitiateSession
+} derive(Eq, @debug.Debug)
+pub fn EuroradioMsgType::from_code(Int) -> Self
+
+pub struct Force {
+  kn : Double
+} derive(Eq, @debug.Debug)
+pub fn Force::from_kn(Double) -> Self
+pub fn Force::from_newtons(Double) -> Self
+pub fn Force::to_kn(Self) -> Double
+pub fn Force::to_newtons(Self) -> Double
+
 pub struct GradientSegment {
   start_pos : Double
   end_pos : Double
   value : Double
 } derive(Eq, @debug.Debug)
 pub fn GradientSegment::new(Double, Double, Double) -> Self
+
+pub struct HardwareSensorStatus {
+  wheel_encoder_1_ok : Bool
+  wheel_encoder_2_ok : Bool
+  doppler_radar_ok : Bool
+  balise_antenna_ok : Bool
+  radio_modem_a_ok : Bool
+  radio_modem_b_ok : Bool
+  brake_pressure_sensor_ok : Bool
+} derive(Eq, @debug.Debug)
+pub fn HardwareSensorStatus::healthy_default() -> Self
+pub fn HardwareSensorStatus::is_all_healthy(Self) -> Bool
+
+pub struct LevelCrossingProtection {
+  crossing_id : Int
+  location_m : Double
+  state : LevelCrossingState
+  warning_distance_m : Double
+  max_crossing_speed_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn LevelCrossingProtection::allowed_speed_mps(Self) -> Double
+pub fn LevelCrossingProtection::new(Int, Double, LevelCrossingState, Double) -> Self
+
+pub enum LevelCrossingState {
+  OpenToHighway
+  ClosingInProcess
+  FullyClosedAndLocked
+  CrossingFault
+} derive(Eq, @debug.Debug)
+pub fn LevelCrossingState::from_code(Int) -> Self
+
+pub struct Mass {
+  tonnes : Double
+} derive(Eq, @debug.Debug)
+pub fn Mass::from_kg(Double) -> Self
+pub fn Mass::from_tonnes(Double) -> Self
+pub fn Mass::to_kg(Self) -> Double
+pub fn Mass::to_tonnes(Self) -> Double
 
 pub struct MovementAuthority {
   ma_id : Int
@@ -120,6 +418,20 @@ pub struct MovementAuthority {
 } derive(Eq, @debug.Debug)
 pub fn MovementAuthority::new(Int, Int64, Double, Double, Double, Double, Double) -> Self
 
+pub struct NationalValues {
+  nv_id : Int
+  v_nvsupervision : Double
+  v_nvonsight : Double
+  v_nvlimsuperv : Double
+  v_nvshuntoffset : Double
+  t_nvovtrp : Int64
+  d_nvovtrp : Double
+  t_nvcontact : Int64
+  m_nvcontact : Int
+  m_nvderun : Int
+} derive(Eq, @debug.Debug)
+pub fn NationalValues::default() -> Self
+
 pub struct OdometerBounds {
   nominal_pos : Double
   min_pos : Double
@@ -129,6 +441,14 @@ pub struct OdometerBounds {
   skid_detected : Bool
 } derive(Eq, @debug.Debug)
 pub fn OdometerBounds::new(Double, Double, Bool, Bool) -> Self
+
+pub struct OdometerConfidenceInterval {
+  nominal_position_m : Double
+  min_position_m : Double
+  max_position_m : Double
+  uncertainty_window_m : Double
+} derive(Eq, @debug.Debug)
+pub fn OdometerConfidenceInterval::new(Double, Double) -> Self
 
 pub struct PhysicalSpeedSegment {
   start_pos : Double
@@ -148,6 +468,65 @@ pub struct ProtectionThresholds {
 } derive(Eq, @debug.Debug)
 pub fn ProtectionThresholds::new(Double, Double, Double, Double, Double, Double, Double) -> Self
 
+pub enum PsdDoorState {
+  DoorsClosedAndLocked
+  DoorsOpening
+  DoorsFullyOpen
+  DoorsClosing
+  DoorObstacleDetected
+  EmergencyHandlePulled
+} derive(Eq, @debug.Debug)
+pub fn PsdDoorState::from_code(Int) -> Self
+
+pub struct PsdInterlockData {
+  platform_id : Int
+  door_state : PsdDoorState
+  all_doors_closed_and_locked : Bool
+  emergency_stop_button_active : Bool
+} derive(Eq, @debug.Debug)
+pub fn PsdInterlockData::new(Int, PsdDoorState, Bool, Bool) -> Self
+
+pub struct RadioChannelQuality {
+  rsrp_dbm : Double
+  rsrq_db : Double
+  sinr_db : Double
+  handover_in_progress : Bool
+} derive(Eq, @debug.Debug)
+pub fn RadioChannelQuality::is_usable(Self) -> Bool
+pub fn RadioChannelQuality::new(Double, Double, Double) -> Self
+
+pub struct RadioMessageHeader {
+  msg_type : EuroradioMsgType
+  rbc_id : Int
+  train_id : Int
+  seq_number : Int64
+  timestamp_ms : Int64
+  session_active : Bool
+} derive(Eq, @debug.Debug)
+pub fn RadioMessageHeader::new(EuroradioMsgType, Int, Int, Int64, Int64, Bool) -> Self
+
+pub struct RadioSessionContext {
+  session_id : Int64
+  rbc_identifier : Int
+  mut session_state : RadioSessionState
+  mut tx_seq_number : Int64
+  mut rx_seq_number : Int64
+  mut last_rx_timestamp_ms : Int64
+} derive(Eq, @debug.Debug)
+pub fn RadioSessionContext::new(Int64, Int) -> Self
+pub fn RadioSessionContext::next_tx_seq(Self) -> Int64
+pub fn RadioSessionContext::record_rx_seq(Self, Int64, Int64) -> Unit
+pub fn RadioSessionContext::update_state(Self, RadioSessionState, Int64) -> Unit
+
+pub enum RadioSessionState {
+  Disconnected
+  HandshakeInProgress
+  SessionEstablished
+  SessionDegraded
+  SessionTerminated
+} derive(Eq, @debug.Debug)
+pub fn RadioSessionState::from_code(Int) -> Self
+
 pub enum RailCondition {
   Dry
   Wet
@@ -166,6 +545,36 @@ pub struct SafetyAlertLog {
   speed_mps : Double
 } derive(Eq, @debug.Debug)
 pub fn SafetyAlertLog::new(Int64, Int, Int, String, Double, Double) -> Self
+
+pub enum SignalAspect {
+  RedStop
+  YellowApproach
+  DoubleYellow
+  GreenProceed
+  FlashingYellow
+} derive(Eq, @debug.Debug)
+pub fn SignalAspect::from_code(Int) -> Self
+
+pub struct Speed {
+  mps : Double
+} derive(Eq, @debug.Debug)
+pub fn Speed::from_kmh(Double) -> Self
+pub fn Speed::from_mps(Double) -> Self
+pub fn Speed::to_kmh(Self) -> Double
+pub fn Speed::to_mps(Self) -> Double
+
+pub struct StationPlatformLocation {
+  station_id : Int
+  station_name : String
+  platform_start_m : Double
+  platform_stop_center_m : Double
+  platform_end_m : Double
+  stopping_tolerance_m : Double
+  psd_door_count : Int
+  psd_interlock_closed : Bool
+} derive(Eq, @debug.Debug)
+pub fn StationPlatformLocation::is_aligned(Self, Double, Double) -> Bool
+pub fn StationPlatformLocation::new(Int, String, Double, Double, Double, Double, Int) -> Self
 
 pub enum SwitchPosition {
   Normal
@@ -197,6 +606,32 @@ pub struct TemporarySpeedRestriction {
 } derive(Eq, @debug.Debug)
 pub fn TemporarySpeedRestriction::new(Int, Double, Double, Double, Bool, Int) -> Self
 
+pub struct TrackChainagePoint {
+  chainage_m : Double
+  latitude : Double
+  longitude : Double
+  altitude_m : Double
+  track_line_id : Int
+} derive(Eq, @debug.Debug)
+pub fn TrackChainagePoint::new(Double, Double, Double, Double, Int) -> Self
+
+pub enum TrackCircuitCarrier {
+  Freq1700Hz
+  Freq2000Hz
+  Freq2300Hz
+  Freq2600Hz
+  FreqUnknown
+} derive(Eq, @debug.Debug)
+pub fn TrackCircuitCarrier::from_int(Int) -> Self
+
+pub struct TrackCircuitCodeRate {
+  code_rate_hz : Double
+  speed_limit_mps : Double
+  signal_aspect_name : String
+} derive(Eq, @debug.Debug)
+pub fn TrackCircuitCodeRate::default_tvm430_table() -> Array[Self]
+pub fn TrackCircuitCodeRate::new(Double, Double, String) -> Self
+
 pub struct TrackSegment {
   segment_id : Int
   start_position : Double
@@ -223,6 +658,28 @@ pub struct TrackSwitch {
 } derive(Eq, @debug.Debug)
 pub fn TrackSwitch::allowed_speed(Self) -> Double
 pub fn TrackSwitch::new(Int, Double, SwitchPosition, Double, Double, Bool) -> Self
+
+pub struct TrackVector2D {
+  x : Double
+  y : Double
+} derive(Eq, @debug.Debug)
+pub fn TrackVector2D::distance_to(Self, Self) -> Double
+pub fn TrackVector2D::new(Double, Double) -> Self
+
+pub struct TrainBusTelegram {
+  bus_id : Int
+  cycle_seq_num : Int64
+  timestamp_ms : Int64
+  raw_wheel_pulses_channel_a : Int
+  raw_wheel_pulses_channel_b : Int
+  doppler_frequency_hz : Double
+  brake_pipe_pressure_kpa : Double
+  cylinder_pressure_kpa : Double
+  traction_notch_percent : Double
+  brake_notch_percent : Double
+  emergency_brake_relay_closed : Bool
+} derive(Eq, @debug.Debug)
+pub fn TrainBusTelegram::new(Int, Int64, Int64, Int, Int, Double, Double, Double, Double, Double, Bool) -> Self
 
 pub struct TrainParams {
   train_id : Int
@@ -262,6 +719,22 @@ pub struct TrainState {
   emergency_brake_applied : Bool
 } derive(Eq, @debug.Debug)
 pub fn TrainState::new(Int64, OdometerBounds, Double, Double, CabMode, Int, Bool, Bool, Bool) -> Self
+
+pub struct TsrPacket65Data {
+  nid_packet : Int
+  nid_tsr : Int
+  d_tsr_m : Double
+  l_tsr_m : Double
+  v_tsr_mps : Double
+  q_front : Bool
+} derive(Eq, @debug.Debug)
+pub fn TsrPacket65Data::new(Int, Double, Double, Double, Bool) -> Self
+
+pub struct TsrRevokePacket66Data {
+  nid_packet : Int
+  nid_tsr : Int
+} derive(Eq, @debug.Debug)
+pub fn TsrRevokePacket66Data::new(Int) -> Self
 
 // Type aliases
 

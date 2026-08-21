@@ -12,6 +12,19 @@ import {
 // Errors
 
 // Types and methods
+pub struct BaliseGroupVerifier {
+  mut last_group_id : Int
+  mut last_balise_location_m : Double
+} derive(Eq, @debug.Debug)
+pub fn BaliseGroupVerifier::new() -> Self
+pub fn BaliseGroupVerifier::verify_group_sequence(Self, @types.BaliseData, Int) -> Bool
+
+pub struct BaliseRfidAntenna {
+  min_rssi_dbm : Double
+} derive(Eq, @debug.Debug)
+pub fn BaliseRfidAntenna::is_signal_valid(Self, Double) -> Bool
+pub fn BaliseRfidAntenna::new() -> Self
+
 pub struct BaliseTelegramParser {
   crc_poly : Int
 } derive(Eq, @debug.Debug)
@@ -19,6 +32,38 @@ pub fn BaliseTelegramParser::new() -> Self
 pub fn BaliseTelegramParser::parse_packet_12(Self, Array[Int], Int64) -> @types.MovementAuthority?
 pub fn BaliseTelegramParser::parse_packet_27(Self, Array[Int]) -> @types.PhysicalSpeedSegment?
 pub fn BaliseTelegramParser::verify_checksum(Self, Array[Int]) -> Bool
+
+pub struct EurobaliseCrc32 {
+  polynomial : Int
+} derive(Eq, @debug.Debug)
+pub fn EurobaliseCrc32::compute(Self, Array[Int]) -> Int
+pub fn EurobaliseCrc32::new() -> Self
+
+pub struct EurobalisePacket41Decoder {
+  version : Int
+} derive(Eq, @debug.Debug)
+pub fn EurobalisePacket41Decoder::decode_packet_41(Self, Array[Int]) -> @types.EtcsPacket41Data?
+pub fn EurobalisePacket41Decoder::new() -> Self
+
+pub struct EurobalisePacket44Decoder {
+  nid_xuser : Int
+} derive(Eq, @debug.Debug)
+pub fn EurobalisePacket44Decoder::new() -> Self
+pub fn EurobalisePacket44Decoder::parse_packet_44(Self, Array[Int]) -> Array[Int]?
+
+pub struct EurobalisePacket65Decoder {
+  version : Int
+} derive(Eq, @debug.Debug)
+pub fn EurobalisePacket65Decoder::decode_packet_65(Self, Array[Int]) -> @types.TsrPacket65Data?
+pub fn EurobalisePacket65Decoder::decode_packet_66(Self, Array[Int]) -> @types.TsrRevokePacket66Data?
+pub fn EurobalisePacket65Decoder::new() -> Self
+
+pub struct EurobalisePacketDecoder {
+  version : Int
+} derive(Eq, @debug.Debug)
+pub fn EurobalisePacketDecoder::decode_packet_21_gradient(Self, Array[Int]) -> @types.GradientSegment?
+pub fn EurobalisePacketDecoder::decode_packet_3_national_values(Self, Array[Int]) -> @types.NationalValues?
+pub fn EurobalisePacketDecoder::new() -> Self
 
 pub struct RadioInfillWatchdog {
   mut last_radio_heartbeat_ms : Int64

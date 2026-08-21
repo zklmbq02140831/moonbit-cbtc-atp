@@ -30,6 +30,116 @@ pub struct DualChannelVoter {
 pub fn DualChannelVoter::new(@types.SystemConfig, Double, Double) -> Self
 pub fn DualChannelVoter::vote(Self, @types.ATPEvent, @types.ATPEvent, @types.TrainState, @types.TrainState, @types.ProtectionThresholds, @types.ProtectionThresholds) -> @types.ATPState
 
+pub struct EtcsModeFsm {
+  mut current_mode : EtcsOperatingMode
+} derive(Eq, @debug.Debug)
+pub fn EtcsModeFsm::evaluate_transition(Self, Bool, Bool, Bool, Bool) -> EtcsOperatingMode
+pub fn EtcsModeFsm::mode(Self) -> EtcsOperatingMode
+pub fn EtcsModeFsm::new() -> Self
+
+pub enum EtcsOperatingMode {
+  FullSupervision
+  OnSight
+  StaffResponsible
+  Shunting
+  Reversing
+  Sleeping
+  Standby
+  Trip
+  PostTrip
+  SystemFailure
+  Isolation
+  Unfitted
+  LimitedSupervision
+  NonLeading
+  NationalSystem
+} derive(Eq, @debug.Debug)
+pub fn EtcsOperatingMode::code(Self) -> Int
+pub fn EtcsOperatingMode::from_code(Int) -> Self
+
+pub enum FsSubState {
+  Accelerating
+  Coasting
+  TargetApproaching
+  TargetReached
+} derive(Eq, @debug.Debug)
+pub fn FsSubState::from_code(Int) -> Self
+
+pub struct FullSupervisionSubFsm {
+  mut sub_state : FsSubState
+} derive(Eq, @debug.Debug)
+pub fn FullSupervisionSubFsm::new() -> Self
+pub fn FullSupervisionSubFsm::update(Self, Double, Double, Double) -> FsSubState
+
+pub struct ModeTransitionMatrix {
+  matrix_version : Int
+} derive(Eq, @debug.Debug)
+pub fn ModeTransitionMatrix::can_transition(Self, EtcsOperatingMode, EtcsOperatingMode, Double) -> Bool
+pub fn ModeTransitionMatrix::new() -> Self
+
+pub struct OnSightSubFsm {
+  mut sub_state : OsSubState
+  max_os_speed_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn OnSightSubFsm::new() -> Self
+pub fn OnSightSubFsm::update(Self, Double, Bool) -> OsSubState
+
+pub struct OperatingModeManager {
+  mut active_mode : @types.CabMode
+} derive(Eq, @debug.Debug)
+pub fn OperatingModeManager::get_mode(Self) -> @types.CabMode
+pub fn OperatingModeManager::new() -> Self
+pub fn OperatingModeManager::request_transition(Self, @types.CabMode, Double, Bool) -> Bool
+
+pub enum OsSubState {
+  VisionScan
+  RestrictedAdvance
+  ObstacleAlert
+  FullStop
+} derive(Eq, @debug.Debug)
+pub fn OsSubState::from_code(Int) -> Self
+
+pub struct ReversingSubFsm {
+  max_rv_speed_mps : Double
+  max_rv_distance_m : Double
+  mut rv_start_pos_m : Double
+} derive(Eq, @debug.Debug)
+pub fn ReversingSubFsm::is_reversing_permitted(Self, Double, Double) -> Bool
+pub fn ReversingSubFsm::new() -> Self
+pub fn ReversingSubFsm::start_reversing(Self, Double) -> Unit
+
+pub struct ShuntingSubFsm {
+  mut active : Bool
+  max_shunt_speed_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn ShuntingSubFsm::activate(Self) -> Unit
+pub fn ShuntingSubFsm::deactivate(Self) -> Unit
+pub fn ShuntingSubFsm::is_overspeed(Self, Double) -> Bool
+pub fn ShuntingSubFsm::new() -> Self
+
+pub struct Sil4GuardEvaluator {
+  cpu_clock_diff_max_ms : Int64
+  memory_parity_ok : Bool
+} derive(Eq, @debug.Debug)
+pub fn Sil4GuardEvaluator::new() -> Self
+pub fn Sil4GuardEvaluator::verify_sil4_guards(Self, Int64, Int64) -> Bool
+
+pub struct StaffResponsibleSubFsm {
+  max_sr_speed_mps : Double
+  mut driver_override_acknowledged : Bool
+} derive(Eq, @debug.Debug)
+pub fn StaffResponsibleSubFsm::acknowledge_sr_mode(Self) -> Unit
+pub fn StaffResponsibleSubFsm::is_speed_permitted(Self, Double) -> Bool
+pub fn StaffResponsibleSubFsm::new() -> Self
+
+pub struct SystemFailureFsm {
+  mut fault_latched : Bool
+  mut failure_code : Int
+} derive(Eq, @debug.Debug)
+pub fn SystemFailureFsm::is_fault_active(Self) -> Bool
+pub fn SystemFailureFsm::new() -> Self
+pub fn SystemFailureFsm::trigger_fault(Self, Int) -> Unit
+
 // Type aliases
 
 // Traits
