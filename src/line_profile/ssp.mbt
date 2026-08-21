@@ -26,7 +26,7 @@ pub fn StaticSpeedProfile::get_physical_limit(
   self : StaticSpeedProfile,
   position : Double,
 ) -> Double {
-  let mut limit = 1000.0 // high default ceiling
+  let mut limit = 1000.0
   for i = 0; i < self.segments.length(); i = i + 1 {
     let s = self.segments[i]
     if position >= s.start_pos && position <= s.end_pos {
@@ -62,7 +62,6 @@ pub fn StaticSpeedProfile::get_curvature_speed_limit(
     let c = self.curvatures[i]
     if position >= c.start_pos && position <= c.end_pos {
       if c.radius > 0.1 {
-        // Standard railway formula for max speed on curve with cant: v_max = sqrt((R * (h + 100)) / 11.8) in km/h
         let effective_cant = if cant_mm > 0.0 { cant_mm } else { c.cant }
         let limit_kmh = (c.radius * (effective_cant + 110.0) / 11.8).sqrt()
         let limit_mps = limit_kmh / 3.6
@@ -81,7 +80,6 @@ pub fn StaticSpeedProfile::get_switch_limit(
   let mut limit = 1000.0
   for i = 0; i < self.switches.length(); i = i + 1 {
     let sw = self.switches[i]
-    // Switch influence zone +/- 50m
     if (position - sw.position_m).abs() <= 50.0 {
       let allowed = sw.allowed_speed()
       if allowed < limit {
@@ -90,6 +88,19 @@ pub fn StaticSpeedProfile::get_switch_limit(
     }
   }
   limit
+}
+
+///|
+/// TurnoutType speed rating lookup function according to standard railway turnout geometry.
+pub fn turnout_speed_rating_mps(turnout_ratio_code : Int) -> Double {
+  match turnout_ratio_code {
+    9 => 8.33 // No. 9 turnout (30 km/h)
+    12 => 12.5 // No. 12 turnout (45 km/h)
+    18 => 22.22 // No. 18 turnout (80 km/h)
+    30 => 44.44 // No. 30 high-speed turnout (160 km/h)
+    42 => 61.11 // No. 42 high-speed turnout (220 km/h)
+    _ => 8.33
+  }
 }
 
 ///|

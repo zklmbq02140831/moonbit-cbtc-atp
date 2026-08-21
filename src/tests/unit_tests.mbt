@@ -161,19 +161,15 @@ test "SIL4 state machine transition sequence" {
     100.0, 20.0, 21.38, 22.22, 22.78, 24.17, 1000.0,
   )
 
-  // 1. SelfTestPass -> Standby
   let st1 = fsm.transition(@types.ATPEvent::from_code(101), tstate, thresh)
   inspect(st1.severity_level(), content="1")
 
-  // 2. CabActivated -> NormalOperating
   let st2 = fsm.transition(@types.ATPEvent::from_code(102), tstate, thresh)
   inspect(st2.severity_level(), content="2")
 
-  // 3. OverspeedWarn -> OverspeedWarning
   let st3 = fsm.transition(@types.ATPEvent::from_code(202), tstate, thresh)
   inspect(st3.severity_level(), content="3")
 
-  // 4. ServiceBrake -> ServiceBrakingTriggered
   let st4 = fsm.transition(@types.ATPEvent::from_code(203), tstate, thresh)
   inspect(st4.severity_level(), content="4")
 }
@@ -256,10 +252,191 @@ test "formal spec contracts validation" {
 }
 
 ///|
-test "full simulation runner scenario execution" {
+test "physics unit conversions speed distance acceleration" {
+  let spd = @types.Speed::from_kmh(360.0)
+  inspect(spd.to_mps(), content="100")
+  inspect(spd.to_kmh(), content="360")
+
+  let dist = @types.Distance::from_km(2.5)
+  inspect(dist.to_meters(), content="2500")
+
+  let mass = @types.Mass::from_tonnes(500.0)
+  inspect(mass.to_kg(), content="500000")
+}
+
+///|
+test "hardware sensor diagnostics status check" {
+  let sensor = @types.HardwareSensorStatus::healthy_default()
+  inspect(sensor.is_all_healthy(), content="true")
+}
+
+///|
+test "pneumatic brake pipe wave propagation delay" {
+  let wave_model = @dynamics.AirBrakePipeWaveModel::new()
+  let delay_head = wave_model.propagation_delay_s(0.0)
+  let delay_tail = wave_model.propagation_delay_s(520.0)
+
+  inspect(delay_head, content="0")
+  inspect(delay_tail > 1.9, content="true")
+}
+
+///|
+test "traction motor force speed envelope" {
+  let params = @types.TrainParams::default_high_speed()
+  let trac = @dynamics.TractionEnvelopeCalculator::new(params)
+
+  let f_low = trac.max_traction_force_kn(5.0)
+  let f_high = trac.max_traction_force_kn(80.0)
+
+  inspect(f_low, content="300")
+  inspect(f_high < f_low, content="true")
+}
+
+///|
+test "rollback detector unintended reverse movement" {
+  let rb = @protection.RollbackDetector::new(0.5) // 0.5m limit
+  rb.set_standby_position(1000.0)
+
+  let ok_move = rb.check_movement(999.7, 1) // 0.3m reverse < 0.5m limit
+  let alarm_move = rb.check_movement(999.3, 1) // 0.7m reverse > 0.5m limit
+
+  inspect(ok_move, content="false")
+  inspect(alarm_move, content="true")
+}
+
+///|
+test "equivalent gradient smoothing over train length" {
+  let grads = [
+    @types.GradientSegment::new(0.0, 100.0, 0.0),
+    @types.GradientSegment::new(100.0, 300.0, 20.0),
+  ]
+  let eval = @line_profile.GradientProfileEvaluator::new(grads)
+  let i_equiv = eval.equivalent_gradient_over_length(200.0, 200.0, 10.0)
+
+  inspect(i_equiv > 0.0, content="true")
+  inspect(i_equiv < 20.0, content="true")
+}
+
+///|
+test "track circuit code map TVM430 resolution" {
+  let map = @line_profile.TrackCircuitCodeMap::new(
+    @types.TrackCircuitCodeRate::default_tvm430_table(),
+  )
+  let v_29hz = map.resolve_speed_limit_mps(29.0)
+  let v_15hz = map.resolve_speed_limit_mps(15.9)
+
+  inspect(v_29hz > 90.0, content="true")
+  inspect(v_15hz > 40.0, content="true")
+}
+
+///|
+test "brake force blending allocator" {
+  let allocator = @dynamics.BrakeForceAllocator::new(150.0, 200.0)
+  let (elec, pneu) = allocator.allocate(250.0, 20.0) // 250 kN total requested
+
+  inspect(elec, content="150")
+  inspect(pneu, content="100")
+}
+
+///|
+test "WSP anti-skid modulation response" {
+  let wsp = @dynamics.WheelSlideProtector::new(0.12)
+  let ratio_normal = wsp.evaluate_wsp_action(20.0, 20.0)
+  let ratio_skid = wsp.evaluate_wsp_action(15.0, 20.0) // 25% slip > 12% limit
+
+  inspect(ratio_normal, content="1")
+  inspect(ratio_skid, content="0.3")
+}
+
+///|
+test "target distance release speed calculation" {
+  let tdc = @protection.TargetDistanceCalculator::new()
+  let v_rel_near = tdc.calculate_release_speed_mps(15.0)
+  let v_rel_far = tdc.calculate_release_speed_mps(200.0)
+
+  inspect(v_rel_near > 4.0, content="true")
+  inspect(v_rel_far > v_rel_near, content="true")
+}
+
+///|
+test "radio session state context sequence tracking" {
+  let ctx = @types.RadioSessionContext::new(1001, 5)
+  let seq1 = ctx.next_tx_seq()
+  let seq2 = ctx.next_tx_seq()
+
+  inspect(seq1, content="1")
+  inspect(seq2, content="2")
+}
+
+///|
+test "cbtc virtual block occupancy management" {
+  let b = @line_profile.CbtcVirtualBlock::new(101, 100.0, 500.0)
+  b.occupy(201, 8)
+  inspect(b.is_occupied, content="true")
+
+  b.release()
+  inspect(b.is_occupied, content="false")
+}
+
+///|
+test "thermal brake disc temperature and fade factor" {
+  let thermal = @dynamics.ThermalBrakeFadeModel::new()
+  let temp = thermal.update_temperature(200.0, 30.0, 10.0)
+  let fade = thermal.fade_multiplier()
+
+  inspect(temp > 20.0, content="true")
+  inspect(fade <= 1.0, content="true")
+}
+
+///|
+test "catenary voltage derating factor" {
+  let cat = @dynamics.CatenaryPowerEnvelope::ac_25kv()
+  let f_full = cat.voltage_derating_factor(25000.0)
+  let f_low = cat.voltage_derating_factor(22000.0)
+
+  inspect(f_full, content="1")
+  inspect(f_low < 1.0, content="true")
+}
+
+///|
+test "emergency trip relay manager reset guard" {
+  let trip_mgr = @protection.EmergencyTripManager::new()
+  trip_mgr.trigger_trip()
+  inspect(trip_mgr.is_tripped(), content="true")
+
+  let reset_fail = trip_mgr.attempt_reset(5.0) // Failed reset while moving at 5 m/s
+  inspect(reset_fail, content="false")
+
+  trip_mgr.register_driver_ack()
+  let reset_ok = trip_mgr.attempt_reset(0.0) // Reset succeeds at full stop (0 m/s) with driver ack
+  inspect(reset_ok, content="true")
+}
+
+///|
+test "unintended movement protection watchdog" {
+  let ump = @protection.UnintendedMovementProtection::new()
+  ump.arm_protection(500.0)
+
+  let safe_move = ump.check_unintended_movement(500.2) // 0.2m move <= 0.5m
+  let trip_move = ump.check_unintended_movement(500.8) // 0.8m move > 0.5m
+
+  inspect(safe_move, content="false")
+  inspect(trip_move, content="true")
+}
+
+///|
+test "full 11 scenario simulation runner execution" {
   let summaries = @simulation.run_all_simulations()
-  inspect(summaries.length(), content="3")
+  inspect(summaries.length(), content="11")
   inspect(summaries[0].safety_contract_passed, content="true")
   inspect(summaries[1].safety_contract_passed, content="true")
   inspect(summaries[2].safety_contract_passed, content="true")
+  inspect(summaries[3].safety_contract_passed, content="true")
+  inspect(summaries[4].safety_contract_passed, content="true")
+  inspect(summaries[5].safety_contract_passed, content="true")
+  inspect(summaries[6].safety_contract_passed, content="true")
+  inspect(summaries[7].safety_contract_passed, content="true")
+  inspect(summaries[8].safety_contract_passed, content="true")
+  inspect(summaries[9].safety_contract_passed, content="true")
+  inspect(summaries[10].safety_contract_passed, content="true")
 }
