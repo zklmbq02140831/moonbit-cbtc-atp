@@ -19,6 +19,56 @@ pub struct CeilingSpeedMonitor {
 pub fn CeilingSpeedMonitor::evaluate(Self, Double, @types.ProtectionThresholds) -> @types.ATPEvent
 pub fn CeilingSpeedMonitor::new(@types.SystemConfig) -> Self
 
+pub struct EbiSbiCurveCalculator {
+  service_decel_mps2 : Double
+  emergency_decel_mps2 : Double
+} derive(Eq, @debug.Debug)
+pub fn EbiSbiCurveCalculator::ebi_speed_at_distance(Self, Double) -> Double
+pub fn EbiSbiCurveCalculator::new(Double, Double) -> Self
+pub fn EbiSbiCurveCalculator::sbi_speed_at_distance(Self, Double) -> Double
+
+pub struct EmergencyTripManager {
+  mut trip_relay_cut_off : Bool
+  mut manual_ack_received : Bool
+} derive(Eq, @debug.Debug)
+pub fn EmergencyTripManager::attempt_reset(Self, Double) -> Bool
+pub fn EmergencyTripManager::is_tripped(Self) -> Bool
+pub fn EmergencyTripManager::new() -> Self
+pub fn EmergencyTripManager::register_driver_ack(Self) -> Unit
+pub fn EmergencyTripManager::trigger_trip(Self) -> Unit
+
+pub struct EoaTargetDecelerationProfile {
+  deceleration_mps2 : Double
+} derive(Eq, @debug.Debug)
+pub fn EoaTargetDecelerationProfile::new(Double) -> Self
+pub fn EoaTargetDecelerationProfile::permitted_speed_to_eoa(Self, Double) -> Double
+
+pub struct EtcsSupervisionCalculator {
+  config : @types.SystemConfig
+} derive(Eq, @debug.Debug)
+pub fn EtcsSupervisionCalculator::calculate_profile(Self, Double, Double) -> EtcsSupervisionProfile
+pub fn EtcsSupervisionCalculator::new(@types.SystemConfig) -> Self
+
+pub struct EtcsSupervisionProfile {
+  position_m : Double
+  v_perm_mps : Double
+  v_ind_mps : Double
+  v_warn_mps : Double
+  v_sbi_mps : Double
+  v_ebi_mps : Double
+  v_trip_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn EtcsSupervisionProfile::new(Double, Double, Double, Double, Double, Double, Double) -> Self
+
+pub struct OdometerSensorFusion {
+  mut filtered_speed_mps : Double
+  mut filtered_pos_m : Double
+  wheel_weight : Double
+  radar_weight : Double
+} derive(Eq, @debug.Debug)
+pub fn OdometerSensorFusion::new() -> Self
+pub fn OdometerSensorFusion::update_fusion(Self, Double, Double?, Double) -> Double
+
 pub struct OdometerTracker {
   mut accumulated_pos : Double
   mut confidence_margin : Double
@@ -30,6 +80,43 @@ pub fn OdometerTracker::new(Double, Double, Double) -> Self
 pub fn OdometerTracker::reset_at_balise(Self, Double, Double) -> Unit
 pub fn OdometerTracker::update(Self, Double, Double?, Int64) -> @types.OdometerBounds
 
+pub struct OverspeedTripHardwareInterlock {
+  config : @types.SystemConfig
+} derive(Eq, @debug.Debug)
+pub fn OverspeedTripHardwareInterlock::new(@types.SystemConfig) -> Self
+pub fn OverspeedTripHardwareInterlock::should_trip_hardware_relay(Self, Double, Double) -> Bool
+
+pub struct PsdZeroSpeedGuard {
+  max_door_unlock_speed_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn PsdZeroSpeedGuard::is_door_unlock_permitted(Self, Double, Bool) -> Bool
+pub fn PsdZeroSpeedGuard::new() -> Self
+
+pub struct ReverseMotionWatchdog {
+  allowed_reverse_limit_m : Double
+  mut standby_pos_m : Double
+} derive(Eq, @debug.Debug)
+pub fn ReverseMotionWatchdog::arm_standby_pos(Self, Double) -> Unit
+pub fn ReverseMotionWatchdog::is_roll_away_detected(Self, Double) -> Bool
+pub fn ReverseMotionWatchdog::new(Double) -> Self
+
+pub struct RollbackDetector {
+  mut initial_pos_m : Double
+  mut max_reverse_dist_m : Double
+  allowed_rollback_limit_m : Double
+} derive(Eq, @debug.Debug)
+pub fn RollbackDetector::check_movement(Self, Double, Int) -> Bool
+pub fn RollbackDetector::new(Double) -> Self
+pub fn RollbackDetector::set_standby_position(Self, Double) -> Unit
+
+pub struct SpeedMarginComparator {
+  hysteresis_band_mps : Double
+  mut last_evaluated_event_code : Int
+} derive(Eq, @debug.Debug)
+pub fn SpeedMarginComparator::compare_with_hysteresis(Self, Double, Double) -> Bool
+pub fn SpeedMarginComparator::new(Double) -> Self
+pub fn SpeedMarginComparator::update_last_event(Self, Int) -> Unit
+
 pub struct SupervisionEngine {
   config : @types.SystemConfig
   params : @types.TrainParams
@@ -37,6 +124,29 @@ pub struct SupervisionEngine {
 } derive(Eq, @debug.Debug)
 pub fn SupervisionEngine::calculate_thresholds(Self, Double, @line_profile.StaticSpeedProfile, @line_profile.TsrManager, @line_profile.MaResolver, Int64, @types.RailCondition) -> @types.ProtectionThresholds
 pub fn SupervisionEngine::new(@types.SystemConfig, @types.TrainParams) -> Self
+
+pub struct TargetDistanceCalculator {
+  min_release_speed_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn TargetDistanceCalculator::calculate_release_speed_mps(Self, Double) -> Double
+pub fn TargetDistanceCalculator::new() -> Self
+
+pub struct UnintendedMovementProtection {
+  max_unintended_dist_m : Double
+  mut locked_pos_m : Double
+  mut protection_armed : Bool
+} derive(Eq, @debug.Debug)
+pub fn UnintendedMovementProtection::arm_protection(Self, Double) -> Unit
+pub fn UnintendedMovementProtection::check_unintended_movement(Self, Double) -> Bool
+pub fn UnintendedMovementProtection::disarm_protection(Self) -> Unit
+pub fn UnintendedMovementProtection::new() -> Self
+
+pub struct WheelDiameterAutoCalibrator {
+  mut calibrated_wheel_diameter_m : Double
+  nominal_wheel_diameter_m : Double
+} derive(Eq, @debug.Debug)
+pub fn WheelDiameterAutoCalibrator::calibrate_from_balise_pair(Self, Double, Double) -> Double
+pub fn WheelDiameterAutoCalibrator::new(Double) -> Self
 
 // Type aliases
 

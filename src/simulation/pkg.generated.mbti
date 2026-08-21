@@ -15,6 +15,17 @@ pub fn run_all_simulations() -> Array[SimulationSummary]
 // Errors
 
 // Types and methods
+pub struct ExtremeWeatherBlizzardSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn ExtremeWeatherBlizzardSimulation::new() -> Self
+pub fn ExtremeWeatherBlizzardSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
 pub struct FreightSimulation {
   train_params : @types.TrainParams
   ssp : @line_profile.StaticSpeedProfile
@@ -25,6 +36,39 @@ pub struct FreightSimulation {
 } derive(Eq, @debug.Debug)
 pub fn FreightSimulation::new() -> Self
 pub fn FreightSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct HeavyFreightMountainSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn HeavyFreightMountainSimulation::new() -> Self
+pub fn HeavyFreightMountainSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct HeavyHaulCoalLineSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn HeavyHaulCoalLineSimulation::new() -> Self
+pub fn HeavyHaulCoalLineSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct HighSpeedCrosswindSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn HighSpeedCrosswindSimulation::new() -> Self
+pub fn HighSpeedCrosswindSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
 
 pub struct HighSpeedSimulation {
   train_params : @types.TrainParams
@@ -48,6 +92,17 @@ pub struct MetroSimulation {
 pub fn MetroSimulation::new() -> Self
 pub fn MetroSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
 
+pub struct MountainRailSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn MountainRailSimulation::new() -> Self
+pub fn MountainRailSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
 pub struct SimulationSummary {
   sim_name : String
   total_steps : Int
@@ -57,6 +112,39 @@ pub struct SimulationSummary {
   safety_contract_passed : Bool
 } derive(Eq, @debug.Debug)
 pub fn SimulationSummary::new(String, Int, Double, Double, Int, Bool) -> Self
+
+pub struct SubwayDenseHeadwaySimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn SubwayDenseHeadwaySimulation::new() -> Self
+pub fn SubwayDenseHeadwaySimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct TunnelSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn TunnelSimulation::new() -> Self
+pub fn TunnelSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct UrbanTramSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn UrbanTramSimulation::new() -> Self
+pub fn UrbanTramSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
 
 // Type aliases
 

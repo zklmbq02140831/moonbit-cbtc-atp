@@ -19,6 +19,37 @@ pub fn AdhesionModel::max_adhesion_deceleration(Self, Double, @types.RailConditi
 pub fn AdhesionModel::max_adhesion_force_kn(Self, Double, @types.RailCondition) -> Double
 pub fn AdhesionModel::new(@types.TrainParams) -> Self
 
+pub struct AdhesionRecoverySander {
+  mut sanding_active : Bool
+  sand_adhesion_boost : Double
+} derive(Eq, @debug.Debug)
+pub fn AdhesionRecoverySander::evaluate_sanding(Self, Double, Double) -> Double
+pub fn AdhesionRecoverySander::new() -> Self
+
+pub struct AerodynamicHeadwindModel {
+  air_density_kg_m3 : Double
+  frontal_area_m2 : Double
+  drag_coefficient_cd : Double
+} derive(Eq, @debug.Debug)
+pub fn AerodynamicHeadwindModel::headwind_force_kn(Self, Double, Double) -> Double
+pub fn AerodynamicHeadwindModel::new(Double, Double) -> Self
+
+pub struct AirBrakePipeWaveModel {
+  pipe_wave_speed_mps : Double
+  cylinder_fill_rate : Double
+} derive(Eq, @debug.Debug)
+pub fn AirBrakePipeWaveModel::cylinder_pressure_ratio(Self, Double, Double, Double) -> Double
+pub fn AirBrakePipeWaveModel::new() -> Self
+pub fn AirBrakePipeWaveModel::propagation_delay_s(Self, Double) -> Double
+
+pub struct BrakeForceAllocator {
+  max_electric_brake_kn : Double
+  max_pneumatic_brake_kn : Double
+  catenary_voltage_available : Bool
+} derive(Eq, @debug.Debug)
+pub fn BrakeForceAllocator::allocate(Self, Double, Double) -> (Double, Double)
+pub fn BrakeForceAllocator::new(Double, Double) -> Self
+
 pub struct BrakeIntegrator {
   params : @types.TrainParams
   adhesion : AdhesionModel
@@ -29,6 +60,20 @@ pub fn BrakeIntegrator::compute_ebd_curve(Self, Double, Double, Double, Double, 
 pub fn BrakeIntegrator::compute_sbd_curve(Self, Double, Double, Double, Double, @types.RailCondition, Double) -> @types.DynamicBrakeCurve
 pub fn BrakeIntegrator::effective_deceleration(Self, Double, Double, @types.RailCondition, Bool, Double) -> Double
 pub fn BrakeIntegrator::new(@types.TrainParams) -> Self
+
+pub struct CatenaryPowerEnvelope {
+  nominal_voltage_v : Double
+  min_usable_voltage_v : Double
+} derive(Eq, @debug.Debug)
+pub fn CatenaryPowerEnvelope::ac_25kv() -> Self
+pub fn CatenaryPowerEnvelope::voltage_derating_factor(Self, Double) -> Double
+
+pub struct CouplerForceModel {
+  coupler_stiffness_k : Double
+  coupler_damping_c : Double
+} derive(Eq, @debug.Debug)
+pub fn CouplerForceModel::calculate_coupler_force_kn(Self, Double, Double) -> Double
+pub fn CouplerForceModel::new() -> Self
 
 pub struct DavisCalculator {
   params : @types.TrainParams
@@ -44,6 +89,63 @@ pub struct GradientCalculator {
 pub fn GradientCalculator::equivalent_acceleration(Self, Double) -> Double
 pub fn GradientCalculator::equivalent_gradient_force_kn(Self, Double, Double) -> Double
 pub fn GradientCalculator::new() -> Self
+
+pub struct IntegratedTrackResistanceEvaluator {
+  davis_calc : DavisCalculator
+  gradient_force_calc : GradientCalculator
+} derive(Eq, @debug.Debug)
+pub fn IntegratedTrackResistanceEvaluator::new(DavisCalculator, GradientCalculator) -> Self
+pub fn IntegratedTrackResistanceEvaluator::total_resistance_force_kn(Self, Double, Double) -> Double
+
+pub struct Rk4DifferentialBrakeSolver {
+  step_size_ds : Double
+} derive(Eq, @debug.Debug)
+pub fn Rk4DifferentialBrakeSolver::new(Double) -> Self
+pub fn Rk4DifferentialBrakeSolver::step_backward(Self, Double, (Double) -> Double) -> Double
+
+pub struct ThermalBrakeFadeModel {
+  mut disc_temp_celsius : Double
+  heat_dissipation_rate : Double
+  fade_onset_temp_celsius : Double
+} derive(Eq, @debug.Debug)
+pub fn ThermalBrakeFadeModel::fade_multiplier(Self) -> Double
+pub fn ThermalBrakeFadeModel::new() -> Self
+pub fn ThermalBrakeFadeModel::update_temperature(Self, Double, Double, Double) -> Double
+
+pub struct TractionEffortNotchMapper {
+  max_traction_kn : Double
+} derive(Eq, @debug.Debug)
+pub fn TractionEffortNotchMapper::new(Double) -> Self
+pub fn TractionEffortNotchMapper::notch_force_kn(Self, Int) -> Double
+
+pub struct TractionEnvelopeCalculator {
+  params : @types.TrainParams
+} derive(Eq, @debug.Debug)
+pub fn TractionEnvelopeCalculator::max_traction_force_kn(Self, Double) -> Double
+pub fn TractionEnvelopeCalculator::max_tractive_acceleration(Self, Double) -> Double
+pub fn TractionEnvelopeCalculator::new(@types.TrainParams) -> Self
+
+pub struct TunnelPistonWaveModel {
+  air_density_kg_m3 : Double
+  train_cross_section_m2 : Double
+  tunnel_cross_section_m2 : Double
+} derive(Eq, @debug.Debug)
+pub fn TunnelPistonWaveModel::new(Double, Double) -> Self
+pub fn TunnelPistonWaveModel::peak_pressure_wave_kpa(Self, Double) -> Double
+
+pub struct WheelRailContactMechanics {
+  kalker_coefficient_f11 : Double
+} derive(Eq, @debug.Debug)
+pub fn WheelRailContactMechanics::longitudinal_creep_force_kn(Self, Double) -> Double
+pub fn WheelRailContactMechanics::new() -> Self
+
+pub struct WheelSlideProtector {
+  mut valve_venting_active : Bool
+  mut vent_cycle_counter : Int
+  slip_threshold : Double
+} derive(Eq, @debug.Debug)
+pub fn WheelSlideProtector::evaluate_wsp_action(Self, Double, Double) -> Double
+pub fn WheelSlideProtector::new(Double) -> Self
 
 // Type aliases
 
