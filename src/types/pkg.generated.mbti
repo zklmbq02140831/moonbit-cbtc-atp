@@ -1,0 +1,268 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/types"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub enum ATPEvent {
+  SelfTestPass
+  CabActivated
+  CabDeactivated
+  SpeedNormal
+  OverspeedWarnDetected
+  ServiceBrakeThresholdExceeded
+  EmergencyBrakeThresholdExceeded
+  TripBoundaryExceeded
+  RollbackDetected
+  MaExpired
+  BaliseMissing
+  HardwareFailSignal
+  DriverAckPressed
+  FullStopReached
+  ResetCommandReceived
+} derive(Eq, @debug.Debug)
+pub fn ATPEvent::code(Self) -> Int
+pub fn ATPEvent::from_code(Int) -> Self
+
+pub enum ATPState {
+  SystemInit
+  Standby
+  NormalOperating
+  OverspeedWarning
+  ServiceBrakingTriggered
+  EmergencyBrakingTriggered
+  EmergencyTrip
+  HardwareFault
+} derive(Eq, @debug.Debug)
+pub fn ATPState::from_int(Int) -> Self
+pub fn ATPState::severity_level(Self) -> Int
+
+pub struct BaliseData {
+  balise_id : Int
+  group_id : Int
+  location : Double
+  balise_type : BaliseType
+  direction : Int
+  telegram_bytes : Array[Int]
+} derive(Eq, @debug.Debug)
+pub fn BaliseData::new(Int, Int, Double, BaliseType, Int, Array[Int]) -> Self
+
+pub enum BaliseType {
+  Fixed
+  Switchable
+  Infill
+  Psd
+} derive(Eq, @debug.Debug)
+pub fn BaliseType::from_int(Int) -> Self
+
+pub enum CabMode {
+  AutomaticTrainOperation
+  AutomaticTrainProtection
+  RestrictedManual
+  OnSight
+  Shunting
+  NonLeading
+  StandbyCab
+  SystemFailure
+} derive(Eq, @debug.Debug)
+pub fn CabMode::from_int(Int) -> Self
+
+pub struct CurvatureSegment {
+  start_pos : Double
+  end_pos : Double
+  radius : Double
+  cant : Double
+} derive(Eq, @debug.Debug)
+pub fn CurvatureSegment::new(Double, Double, Double, Double) -> Self
+
+pub struct CurvePoint {
+  position : Double
+  speed : Double
+  deceleration : Double
+  time_to_target : Double
+} derive(Eq, @debug.Debug)
+pub fn CurvePoint::new(Double, Double, Double, Double) -> Self
+
+pub struct DynamicBrakeCurve {
+  curve_type : String
+  points : Array[CurvePoint]
+  target_position : Double
+  target_speed : Double
+  mut total_distance : Double
+} derive(Eq, @debug.Debug)
+pub fn DynamicBrakeCurve::add_point(Self, CurvePoint) -> Unit
+pub fn DynamicBrakeCurve::get_total_distance(Self) -> Double
+pub fn DynamicBrakeCurve::new(String, Double, Double) -> Self
+pub fn DynamicBrakeCurve::set_total_distance(Self, Double) -> Unit
+
+pub struct GradientSegment {
+  start_pos : Double
+  end_pos : Double
+  value : Double
+} derive(Eq, @debug.Debug)
+pub fn GradientSegment::new(Double, Double, Double) -> Self
+
+pub struct MovementAuthority {
+  ma_id : Int
+  timestamp_ms : Int64
+  start_position : Double
+  eoa_position : Double
+  overlap_distance : Double
+  target_speed : Double
+  route_speed_limit : Double
+  is_valid : Bool
+} derive(Eq, @debug.Debug)
+pub fn MovementAuthority::new(Int, Int64, Double, Double, Double, Double, Double) -> Self
+
+pub struct OdometerBounds {
+  nominal_pos : Double
+  min_pos : Double
+  max_pos : Double
+  confidence_margin : Double
+  slip_detected : Bool
+  skid_detected : Bool
+} derive(Eq, @debug.Debug)
+pub fn OdometerBounds::new(Double, Double, Bool, Bool) -> Self
+
+pub struct PhysicalSpeedSegment {
+  start_pos : Double
+  end_pos : Double
+  max_speed : Double
+} derive(Eq, @debug.Debug)
+pub fn PhysicalSpeedSegment::new(Double, Double, Double) -> Self
+
+pub struct ProtectionThresholds {
+  position : Double
+  permitted_speed : Double
+  warning_speed : Double
+  service_brake_speed : Double
+  emergency_brake_speed : Double
+  trip_speed : Double
+  margin_to_eoa : Double
+} derive(Eq, @debug.Debug)
+pub fn ProtectionThresholds::new(Double, Double, Double, Double, Double, Double, Double) -> Self
+
+pub enum RailCondition {
+  Dry
+  Wet
+  DampWithLeaves
+  Icy
+} derive(Eq, @debug.Debug)
+pub fn RailCondition::adhesion_multiplier(Self) -> Double
+pub fn RailCondition::from_int(Int) -> Self
+
+pub struct SafetyAlertLog {
+  timestamp_ms : Int64
+  alert_code : Int
+  severity : Int
+  message : String
+  position_m : Double
+  speed_mps : Double
+} derive(Eq, @debug.Debug)
+pub fn SafetyAlertLog::new(Int64, Int, Int, String, Double, Double) -> Self
+
+pub enum SwitchPosition {
+  Normal
+  Reverse
+  Moving
+  Unknown
+} derive(Eq, @debug.Debug)
+pub fn SwitchPosition::from_int(Int) -> Self
+
+pub struct SystemConfig {
+  overspeed_warn_margin : Double
+  service_brake_margin : Double
+  emergency_brake_margin : Double
+  trip_margin : Double
+  ma_timeout_ms : Int64
+  odometer_slip_limit : Double
+  rollback_distance_limit : Double
+  redundancy_mode_2o2 : Bool
+} derive(Eq, @debug.Debug)
+pub fn SystemConfig::default() -> Self
+
+pub struct TemporarySpeedRestriction {
+  tsr_id : Int
+  start_position : Double
+  end_position : Double
+  speed_limit : Double
+  active : Bool
+  reason_code : Int
+} derive(Eq, @debug.Debug)
+pub fn TemporarySpeedRestriction::new(Int, Double, Double, Double, Bool, Int) -> Self
+
+pub struct TrackSegment {
+  segment_id : Int
+  start_position : Double
+  end_position : Double
+  speed_limit : Double
+  gradient : Double
+  curvature_radius : Double
+  is_tunnel : Bool
+  switch_id : Int
+  switch_position : Double
+  max_switch_speed : Double
+} derive(Eq, @debug.Debug)
+pub fn TrackSegment::contains(Self, Double) -> Bool
+pub fn TrackSegment::length(Self) -> Double
+pub fn TrackSegment::new(Int, Double, Double, Double, Double, Double, Bool, Int, Double, Double) -> Self
+
+pub struct TrackSwitch {
+  switch_id : Int
+  position_m : Double
+  state : SwitchPosition
+  normal_speed_limit : Double
+  reverse_speed_limit : Double
+  locked : Bool
+} derive(Eq, @debug.Debug)
+pub fn TrackSwitch::allowed_speed(Self) -> Double
+pub fn TrackSwitch::new(Int, Double, SwitchPosition, Double, Double, Bool) -> Self
+
+pub struct TrainParams {
+  train_id : Int
+  train_length : Double
+  total_mass_tonnes : Double
+  rotating_mass_factor : Double
+  max_service_speed : Double
+  max_traction_force_kn : Double
+  max_acceleration : Double
+  service_brake_decel_base : Double
+  emergency_brake_decel_base : Double
+  service_brake_delay_s : Double
+  emergency_brake_delay_s : Double
+  service_brake_build_time_s : Double
+  emergency_brake_build_time_s : Double
+  davis_a : Double
+  davis_b : Double
+  davis_c : Double
+  adhesion_mu0 : Double
+  adhesion_a1 : Double
+  adhesion_a2 : Double
+} derive(Eq, @debug.Debug)
+pub fn TrainParams::default_freight() -> Self
+pub fn TrainParams::default_high_speed() -> Self
+pub fn TrainParams::default_metro() -> Self
+pub fn TrainParams::effective_mass_kg(Self) -> Double
+
+pub struct TrainState {
+  timestamp_ms : Int64
+  odometer : OdometerBounds
+  speed : Double
+  acceleration : Double
+  cab_mode : CabMode
+  direction : Int
+  door_open : Bool
+  brake_applied : Bool
+  emergency_brake_applied : Bool
+} derive(Eq, @debug.Debug)
+pub fn TrainState::new(Int64, OdometerBounds, Double, Double, CabMode, Int, Bool, Bool, Bool) -> Self
+
+// Type aliases
+
+// Traits

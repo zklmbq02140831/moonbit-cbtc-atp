@@ -28,13 +28,13 @@ pub fn FreightSimulation::new() -> FreightSimulation {
     @types.GradientSegment::new(20000.0, 30000.0, 0.0),
   ]
 
-  let curvs = [
-    @types.CurvatureSegment::new(0.0, 30000.0, 0.0, 0.0),
-  ]
+  let curvs = [@types.CurvatureSegment::new(0.0, 30000.0, 0.0, 0.0)]
 
   let switches : Array[@types.TrackSwitch] = Array::new()
 
-  let ssp = @line_profile.StaticSpeedProfile::new(phys_segs, grads, curvs, switches)
+  let ssp = @line_profile.StaticSpeedProfile::new(
+    phys_segs, grads, curvs, switches,
+  )
   let tsr_mgr = @line_profile.TsrManager::new()
   let ma_resolver = @line_profile.MaResolver::new(config.ma_timeout_ms)
 
@@ -53,7 +53,7 @@ pub fn FreightSimulation::run_step(
   self : FreightSimulation,
   train_pos : Double,
   train_speed : Double,
-  now_ms : Int64
+  now_ms : Int64,
 ) -> (@types.ProtectionThresholds, @types.ATPState) {
   let rail = @types.RailCondition::from_int(2) // Wet low adhesion condition
   let thresh = self.engine.calculate_thresholds(
@@ -62,10 +62,12 @@ pub fn FreightSimulation::run_step(
     self.tsr_mgr,
     self.ma_resolver,
     now_ms,
-    rail
+    rail,
   )
 
-  let monitor = @protection.CeilingSpeedMonitor::new(@types.SystemConfig::default())
+  let monitor = @protection.CeilingSpeedMonitor::new(
+    @types.SystemConfig::default(),
+  )
   let evt = monitor.evaluate(train_speed, thresh)
 
   let odo = @types.OdometerBounds::new(train_pos, 1.0, false, false)
@@ -78,7 +80,7 @@ pub fn FreightSimulation::run_step(
     1,
     false,
     false,
-    false
+    false,
   )
 
   let next_state = self.fsm.transition(evt, tstate, thresh)

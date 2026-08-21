@@ -15,7 +15,7 @@ pub fn TsrManager::new() -> TsrManager {
 ///|
 pub fn TsrManager::add_tsr(
   self : TsrManager,
-  tsr : @types.TemporarySpeedRestriction
+  tsr : @types.TemporarySpeedRestriction,
 ) -> Unit {
   // Replace existing TSR if ID matches, else push
   for i = 0; i < self.active_tsrs.length(); i = i + 1 {
@@ -47,7 +47,7 @@ pub fn TsrManager::remove_tsr(self : TsrManager, tsr_id : Int) -> Bool {
 ///|
 pub fn TsrManager::get_tsr_limit_at(
   self : TsrManager,
-  position : Double
+  position : Double,
 ) -> Double {
   let mut min_limit = 1000.0
   for i = 0; i < self.active_tsrs.length(); i = i + 1 {
@@ -65,7 +65,7 @@ pub fn TsrManager::get_tsr_limit_at(
 pub fn TsrManager::get_all_active_in_range(
   self : TsrManager,
   start_pos : Double,
-  end_pos : Double
+  end_pos : Double,
 ) -> Array[@types.TemporarySpeedRestriction] {
   let result = Array::new()
   for i = 0; i < self.active_tsrs.length(); i = i + 1 {

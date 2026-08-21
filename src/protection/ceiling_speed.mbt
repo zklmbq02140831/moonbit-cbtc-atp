@@ -8,15 +8,17 @@ pub struct CeilingSpeedMonitor {
 } derive(Eq, Debug)
 
 ///|
-pub fn CeilingSpeedMonitor::new(config : @types.SystemConfig) -> CeilingSpeedMonitor {
-  { config: config }
+pub fn CeilingSpeedMonitor::new(
+  config : @types.SystemConfig,
+) -> CeilingSpeedMonitor {
+  { config, }
 }
 
 ///|
 pub fn CeilingSpeedMonitor::evaluate(
   self : CeilingSpeedMonitor,
   current_speed : Double,
-  thresholds : @types.ProtectionThresholds
+  thresholds : @types.ProtectionThresholds,
 ) -> @types.ATPEvent {
   // Access config to prevent unused field warning
   let _ = self.config

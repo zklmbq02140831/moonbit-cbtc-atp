@@ -1,0 +1,63 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/simulation"
+
+import {
+  "moonbitlang/core/debug",
+  "zklmbq02140831/moonbit-cbtc-atp/src/line_profile",
+  "zklmbq02140831/moonbit-cbtc-atp/src/protection",
+  "zklmbq02140831/moonbit-cbtc-atp/src/state_machine",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+pub fn run_all_simulations() -> Array[SimulationSummary]
+
+// Errors
+
+// Types and methods
+pub struct FreightSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn FreightSimulation::new() -> Self
+pub fn FreightSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct HighSpeedSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn HighSpeedSimulation::new() -> Self
+pub fn HighSpeedSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct MetroSimulation {
+  train_params : @types.TrainParams
+  ssp : @line_profile.StaticSpeedProfile
+  tsr_mgr : @line_profile.TsrManager
+  ma_resolver : @line_profile.MaResolver
+  engine : @protection.SupervisionEngine
+  fsm : @state_machine.AtpStateMachine
+} derive(Eq, @debug.Debug)
+pub fn MetroSimulation::new() -> Self
+pub fn MetroSimulation::run_step(Self, Double, Double, Int64) -> (@types.ProtectionThresholds, @types.ATPState)
+
+pub struct SimulationSummary {
+  sim_name : String
+  total_steps : Int
+  max_speed_reached : Double
+  min_margin_to_eoa : Double
+  alerts_count : Int
+  safety_contract_passed : Bool
+} derive(Eq, @debug.Debug)
+pub fn SimulationSummary::new(String, Int, Double, Double, Int, Bool) -> Self
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/spec"
+
+import {
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+pub fn verify_deceleration_non_degradation_contract(Double, Double, Double, Double) -> Bool
+
+pub fn verify_no_eoa_overstep_contract(Double, Double, Double, Double, Double) -> Bool
+
+pub fn verify_odometer_bounds_contract(@types.OdometerBounds, Double) -> Bool
+
+pub fn verify_state_escalation_monotonicity_contract(@types.ATPState, @types.ATPState) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

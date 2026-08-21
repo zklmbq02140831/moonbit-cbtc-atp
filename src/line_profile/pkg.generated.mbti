@@ -1,0 +1,63 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/line_profile"
+
+import {
+  "moonbitlang/core/debug",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct MaResolver {
+  mut current_ma : @types.MovementAuthority?
+  mut last_update_ms : Int64
+  timeout_threshold_ms : Int64
+} derive(Eq, @debug.Debug)
+pub fn MaResolver::get_active_eoa(Self, Int64) -> Double?
+pub fn MaResolver::get_active_target_speed(Self, Int64) -> Double
+pub fn MaResolver::is_expired(Self, Int64) -> Bool
+pub fn MaResolver::new(Int64) -> Self
+pub fn MaResolver::remaining_distance_to_eoa(Self, Double, Int64) -> Double
+pub fn MaResolver::update_ma(Self, @types.MovementAuthority, Int64) -> Unit
+
+pub enum SegmentNode {
+  Leaf(Array[@types.TrackSegment])
+  Node(Double, SegmentNode, SegmentNode)
+} derive(Eq, @debug.Debug)
+
+pub struct SegmentTree {
+  root : SegmentNode
+  total_length : Double
+} derive(Eq, @debug.Debug)
+pub fn SegmentTree::build(Array[@types.TrackSegment]) -> Self
+pub fn SegmentTree::find_at(Self, Double) -> @types.TrackSegment?
+pub fn SegmentTree::query_range(Self, Double, Double) -> Array[@types.TrackSegment]
+
+pub struct StaticSpeedProfile {
+  segments : Array[@types.PhysicalSpeedSegment]
+  gradients : Array[@types.GradientSegment]
+  curvatures : Array[@types.CurvatureSegment]
+  switches : Array[@types.TrackSwitch]
+} derive(Eq, @debug.Debug)
+pub fn StaticSpeedProfile::get_curvature_speed_limit(Self, Double, Double) -> Double
+pub fn StaticSpeedProfile::get_effective_limit(Self, Double) -> Double
+pub fn StaticSpeedProfile::get_gradient(Self, Double) -> Double
+pub fn StaticSpeedProfile::get_physical_limit(Self, Double) -> Double
+pub fn StaticSpeedProfile::get_switch_limit(Self, Double) -> Double
+pub fn StaticSpeedProfile::new(Array[@types.PhysicalSpeedSegment], Array[@types.GradientSegment], Array[@types.CurvatureSegment], Array[@types.TrackSwitch]) -> Self
+
+pub struct TsrManager {
+  active_tsrs : Array[@types.TemporarySpeedRestriction]
+} derive(Eq, @debug.Debug)
+pub fn TsrManager::add_tsr(Self, @types.TemporarySpeedRestriction) -> Unit
+pub fn TsrManager::get_all_active_in_range(Self, Double, Double) -> Array[@types.TemporarySpeedRestriction]
+pub fn TsrManager::get_tsr_limit_at(Self, Double) -> Double
+pub fn TsrManager::new() -> Self
+pub fn TsrManager::remove_tsr(Self, Int) -> Bool
+
+// Type aliases
+
+// Traits

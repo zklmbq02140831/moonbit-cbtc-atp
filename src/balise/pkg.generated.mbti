@@ -1,0 +1,34 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/balise"
+
+import {
+  "moonbitlang/core/debug",
+  "zklmbq02140831/moonbit-cbtc-atp/src/line_profile",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct BaliseTelegramParser {
+  crc_poly : Int
+} derive(Eq, @debug.Debug)
+pub fn BaliseTelegramParser::new() -> Self
+pub fn BaliseTelegramParser::parse_packet_12(Self, Array[Int], Int64) -> @types.MovementAuthority?
+pub fn BaliseTelegramParser::parse_packet_27(Self, Array[Int]) -> @types.PhysicalSpeedSegment?
+pub fn BaliseTelegramParser::verify_checksum(Self, Array[Int]) -> Bool
+
+pub struct RadioInfillWatchdog {
+  mut last_radio_heartbeat_ms : Int64
+  radio_timeout_limit_ms : Int64
+} derive(Eq, @debug.Debug)
+pub fn RadioInfillWatchdog::is_radio_lost(Self, Int64) -> Bool
+pub fn RadioInfillWatchdog::new(Int64) -> Self
+pub fn RadioInfillWatchdog::process_infill_ma(Self, @types.MovementAuthority, @line_profile.MaResolver, Int64) -> Bool
+pub fn RadioInfillWatchdog::record_heartbeat(Self, Int64) -> Unit
+
+// Type aliases
+
+// Traits

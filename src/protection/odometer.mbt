@@ -15,7 +15,7 @@ pub struct OdometerTracker {
 pub fn OdometerTracker::new(
   start_pos : Double,
   start_margin : Double,
-  slip_limit : Double
+  slip_limit : Double,
 ) -> OdometerTracker {
   {
     accumulated_pos: start_pos,
@@ -31,7 +31,7 @@ pub fn OdometerTracker::update(
   self : OdometerTracker,
   raw_wheel_speed : Double,
   doppler_radar_speed : Double?,
-  now_ms : Int64
+  now_ms : Int64,
 ) -> @types.OdometerBounds {
   if self.prev_timestamp_ms == 0 {
     self.prev_timestamp_ms = now_ms
@@ -40,7 +40,7 @@ pub fn OdometerTracker::update(
       self.accumulated_pos,
       self.confidence_margin,
       false,
-      false
+      false,
     )
   }
 
@@ -79,7 +79,7 @@ pub fn OdometerTracker::update(
     self.accumulated_pos,
     self.confidence_margin,
     slip,
-    skid
+    skid,
   )
 }
 
@@ -87,7 +87,7 @@ pub fn OdometerTracker::update(
 pub fn OdometerTracker::reset_at_balise(
   self : OdometerTracker,
   balise_pos : Double,
-  balise_accuracy : Double
+  balise_accuracy : Double,
 ) -> Unit {
   self.accumulated_pos = balise_pos
   self.confidence_margin = balise_accuracy

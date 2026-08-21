@@ -1,0 +1,35 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/state_machine"
+
+import {
+  "moonbitlang/core/debug",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct AtpStateMachine {
+  mut current_state : @types.ATPState
+  config : @types.SystemConfig
+  alerts : Array[@types.SafetyAlertLog]
+} derive(Eq, @debug.Debug)
+pub fn AtpStateMachine::get_alerts(Self) -> Array[@types.SafetyAlertLog]
+pub fn AtpStateMachine::new(@types.SystemConfig) -> Self
+pub fn AtpStateMachine::state(Self) -> @types.ATPState
+pub fn AtpStateMachine::transition(Self, @types.ATPEvent, @types.TrainState, @types.ProtectionThresholds) -> @types.ATPState
+
+pub struct DualChannelVoter {
+  channel_a_state : AtpStateMachine
+  channel_b_state : AtpStateMachine
+  max_allowed_speed_diff_mps : Double
+  max_allowed_pos_diff_m : Double
+} derive(Eq, @debug.Debug)
+pub fn DualChannelVoter::new(@types.SystemConfig, Double, Double) -> Self
+pub fn DualChannelVoter::vote(Self, @types.ATPEvent, @types.ATPEvent, @types.TrainState, @types.TrainState, @types.ProtectionThresholds, @types.ProtectionThresholds) -> @types.ATPState
+
+// Type aliases
+
+// Traits

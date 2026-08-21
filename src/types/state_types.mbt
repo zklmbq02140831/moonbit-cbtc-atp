@@ -17,7 +17,7 @@ pub fn OdometerBounds::new(
   nominal : Double,
   margin : Double,
   slip : Bool,
-  skid : Bool
+  skid : Bool,
 ) -> OdometerBounds {
   {
     nominal_pos: nominal,
@@ -80,7 +80,7 @@ pub fn TrainState::new(
   dir : Int,
   door_open : Bool,
   brake : Bool,
-  eb : Bool
+  eb : Bool,
 ) -> TrainState {
   {
     timestamp_ms: timestamp,
@@ -113,7 +113,7 @@ pub fn SafetyAlertLog::new(
   sev : Int,
   msg : String,
   pos : Double,
-  speed : Double
+  speed : Double,
 ) -> SafetyAlertLog {
   {
     timestamp_ms: ts,

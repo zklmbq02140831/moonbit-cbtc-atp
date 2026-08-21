@@ -10,22 +10,24 @@ pub struct DavisCalculator {
 
 ///|
 pub fn DavisCalculator::new(params : @types.TrainParams) -> DavisCalculator {
-  { params: params }
+  { params, }
 }
 
 ///|
 pub fn DavisCalculator::specific_resistance_n_per_tonne(
   self : DavisCalculator,
-  speed_mps : Double
+  speed_mps : Double,
 ) -> Double {
   let v_kmh = speed_mps * 3.6
-  self.params.davis_a + self.params.davis_b * v_kmh + self.params.davis_c * v_kmh * v_kmh
+  self.params.davis_a +
+  self.params.davis_b * v_kmh +
+  self.params.davis_c * v_kmh * v_kmh
 }
 
 ///|
 pub fn DavisCalculator::total_resistance_kn(
   self : DavisCalculator,
-  speed_mps : Double
+  speed_mps : Double,
 ) -> Double {
   let r_spec = self.specific_resistance_n_per_tonne(speed_mps)
   let force_n = r_spec * self.params.total_mass_tonnes
@@ -35,7 +37,7 @@ pub fn DavisCalculator::total_resistance_kn(
 ///|
 pub fn DavisCalculator::resistance_deceleration(
   self : DavisCalculator,
-  speed_mps : Double
+  speed_mps : Double,
 ) -> Double {
   let force_kn = self.total_resistance_kn(speed_mps)
   let force_n = force_kn * 1000.0
