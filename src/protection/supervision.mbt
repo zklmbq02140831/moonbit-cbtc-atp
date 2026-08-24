@@ -30,7 +30,15 @@ pub fn SupervisionEngine::calculate_thresholds(
 ) -> @types.ProtectionThresholds {
   let ssp_limit = ssp.get_effective_limit(train_pos)
   let tsr_limit = tsr_mgr.get_tsr_limit_at(train_pos)
-  let permitted = if tsr_limit < ssp_limit { tsr_limit } else { ssp_limit }
+  let profile_permitted = if tsr_limit < ssp_limit {
+    tsr_limit
+  } else {
+    ssp_limit
+  }
+  let permitted = match ma_resolver.get_active_route_speed_limit(now_ms) {
+    Some(route_limit) if route_limit < profile_permitted => route_limit
+    _ => profile_permitted
+  }
 
   // Check EOA restriction
   let eoa = ma_resolver.get_active_eoa(now_ms)
@@ -39,7 +47,8 @@ pub fn SupervisionEngine::calculate_thresholds(
     None => 0.0
   }
 
-  // Calculate dynamic curve limits if target speed at EOA is zero
+  // Calculate dynamic curve limits using the MA target speed at EOA.
+  let target_speed = ma_resolver.get_active_target_speed(now_ms)
   let grad = ssp.get_gradient(train_pos)
   let warn = permitted + self.config.overspeed_warn_margin
   let sbd_speed = permitted + self.config.service_brake_margin
@@ -49,7 +58,7 @@ pub fn SupervisionEngine::calculate_thresholds(
   if eoa_margin > 0.0 && eoa_margin < 2000.0 {
     let ebd_curve = self.integrator.compute_ebd_curve(
       eoa.unwrap(),
-      0.0,
+      target_speed,
       train_pos,
       grad,
       rail,
@@ -57,7 +66,7 @@ pub fn SupervisionEngine::calculate_thresholds(
     )
     let sbd_curve = self.integrator.compute_sbd_curve(
       eoa.unwrap(),
-      0.0,
+      target_speed,
       train_pos,
       grad,
       rail,

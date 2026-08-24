@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/core/bench",
+  "zklmbq02140831/moonbit-cbtc-atp/src/balise",
+  "zklmbq02140831/moonbit-cbtc-atp/src/dynamics",
+  "zklmbq02140831/moonbit-cbtc-atp/src/line_profile",
+  "zklmbq02140831/moonbit-cbtc-atp/src/runtime",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+pkgtype(kind: "executable")

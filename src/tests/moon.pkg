@@ -7,4 +7,5 @@ import {
   "zklmbq02140831/moonbit-cbtc-atp/src/balise",
   "zklmbq02140831/moonbit-cbtc-atp/src/spec",
   "zklmbq02140831/moonbit-cbtc-atp/src/simulation",
+  "zklmbq02140831/moonbit-cbtc-atp/src/runtime",
 }

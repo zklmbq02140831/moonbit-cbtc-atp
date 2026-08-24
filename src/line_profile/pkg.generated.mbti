@@ -76,6 +76,7 @@ pub struct MaResolver {
   timeout_threshold_ms : Int64
 } derive(Eq, @debug.Debug)
 pub fn MaResolver::get_active_eoa(Self, Int64) -> Double?
+pub fn MaResolver::get_active_route_speed_limit(Self, Int64) -> Double?
 pub fn MaResolver::get_active_target_speed(Self, Int64) -> Double
 pub fn MaResolver::is_expired(Self, Int64) -> Bool
 pub fn MaResolver::new(Int64) -> Self
@@ -153,6 +154,8 @@ pub fn StaticSpeedProfile::get_effective_limit(Self, Double) -> Double
 pub fn StaticSpeedProfile::get_gradient(Self, Double) -> Double
 pub fn StaticSpeedProfile::get_physical_limit(Self, Double) -> Double
 pub fn StaticSpeedProfile::get_switch_limit(Self, Double) -> Double
+pub fn StaticSpeedProfile::has_physical_limit_at(Self, Double) -> Bool
+pub fn StaticSpeedProfile::is_valid(Self) -> Bool
 pub fn StaticSpeedProfile::new(Array[@types.PhysicalSpeedSegment], Array[@types.GradientSegment], Array[@types.CurvatureSegment], Array[@types.TrackSwitch]) -> Self
 
 pub struct SwitchLockingManager {

@@ -26,6 +26,94 @@ pub struct TrainParams {
 } derive(Eq, Debug)
 
 ///|
+/// Construct train dynamics values for integration tests and controlled deployments.
+pub fn TrainParams::new(
+  train_id : Int,
+  train_length : Double,
+  total_mass_tonnes : Double,
+  rotating_mass_factor : Double,
+  max_service_speed : Double,
+  max_traction_force_kn : Double,
+  max_acceleration : Double,
+  service_brake_decel_base : Double,
+  emergency_brake_decel_base : Double,
+  service_brake_delay_s : Double,
+  emergency_brake_delay_s : Double,
+  service_brake_build_time_s : Double,
+  emergency_brake_build_time_s : Double,
+  davis_a : Double,
+  davis_b : Double,
+  davis_c : Double,
+  adhesion_mu0 : Double,
+  adhesion_a1 : Double,
+  adhesion_a2 : Double,
+) -> TrainParams {
+  {
+    train_id,
+    train_length,
+    total_mass_tonnes,
+    rotating_mass_factor,
+    max_service_speed,
+    max_traction_force_kn,
+    max_acceleration,
+    service_brake_decel_base,
+    emergency_brake_decel_base,
+    service_brake_delay_s,
+    emergency_brake_delay_s,
+    service_brake_build_time_s,
+    emergency_brake_build_time_s,
+    davis_a,
+    davis_b,
+    davis_c,
+    adhesion_mu0,
+    adhesion_a1,
+    adhesion_a2,
+  }
+}
+
+///|
+/// Validate the physical ranges used by the braking and resistance models.
+pub fn TrainParams::is_valid(self : TrainParams) -> Bool {
+  train_finite(self.train_length) &&
+  train_finite(self.total_mass_tonnes) &&
+  train_finite(self.rotating_mass_factor) &&
+  train_finite(self.max_service_speed) &&
+  train_finite(self.max_traction_force_kn) &&
+  train_finite(self.max_acceleration) &&
+  train_finite(self.service_brake_decel_base) &&
+  train_finite(self.emergency_brake_decel_base) &&
+  train_finite(self.service_brake_delay_s) &&
+  train_finite(self.emergency_brake_delay_s) &&
+  train_finite(self.service_brake_build_time_s) &&
+  train_finite(self.emergency_brake_build_time_s) &&
+  train_finite(self.davis_a) &&
+  train_finite(self.davis_b) &&
+  train_finite(self.davis_c) &&
+  train_finite(self.adhesion_mu0) &&
+  train_finite(self.adhesion_a1) &&
+  train_finite(self.adhesion_a2) &&
+  self.train_length > 0.0 &&
+  self.total_mass_tonnes > 0.0 &&
+  self.rotating_mass_factor >= 1.0 &&
+  self.max_service_speed > 0.0 &&
+  self.max_traction_force_kn > 0.0 &&
+  self.max_acceleration > 0.0 &&
+  self.service_brake_decel_base > 0.0 &&
+  self.emergency_brake_decel_base >= self.service_brake_decel_base &&
+  self.service_brake_delay_s >= 0.0 &&
+  self.emergency_brake_delay_s >= 0.0 &&
+  self.service_brake_build_time_s >= 0.0 &&
+  self.emergency_brake_build_time_s >= 0.0 &&
+  self.davis_a >= 0.0 &&
+  self.davis_b >= 0.0 &&
+  self.davis_c >= 0.0 &&
+  self.adhesion_mu0 > 0.0 &&
+  self.adhesion_mu0 <= 1.0 &&
+  self.adhesion_a1 >= 0.0 &&
+  self.adhesion_a2 >= 0.0
+}
+
+///|
 pub fn TrainParams::default_high_speed() -> TrainParams {
   {
     train_id: 101,
@@ -103,6 +191,11 @@ pub fn TrainParams::default_freight() -> TrainParams {
 ///|
 pub fn TrainParams::effective_mass_kg(self : TrainParams) -> Double {
   self.total_mass_tonnes * 1000.0 * self.rotating_mass_factor
+}
+
+///|
+fn train_finite(value : Double) -> Bool {
+  !value.is_nan() && !value.is_inf()
 }
 
 ///|

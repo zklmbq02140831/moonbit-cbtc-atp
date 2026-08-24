@@ -3,3 +3,10 @@
 /.mooncakes
 *.tmp
 .DS_Store
+
+# Local workspace artifacts
+PROPOSAL.md
+task_plan.md
+findings.md
+progress.md
+docs/superpowers/

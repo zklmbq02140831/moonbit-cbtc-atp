@@ -28,7 +28,10 @@ pub fn MaResolver::update_ma(
 pub fn MaResolver::is_expired(self : MaResolver, now_ms : Int64) -> Bool {
   match self.current_ma {
     None => true
-    Some(_) => now_ms - self.last_update_ms > self.timeout_threshold_ms
+    Some(ma) =>
+      !is_valid_ma(ma) ||
+      now_ms < self.last_update_ms ||
+      now_ms - self.last_update_ms > self.timeout_threshold_ms
   }
 }
 
@@ -60,6 +63,21 @@ pub fn MaResolver::get_active_target_speed(
 }
 
 ///|
+pub fn MaResolver::get_active_route_speed_limit(
+  self : MaResolver,
+  now_ms : Int64,
+) -> Double? {
+  if self.is_expired(now_ms) {
+    None
+  } else {
+    match self.current_ma {
+      Some(ma) => Some(ma.route_speed_limit)
+      None => None
+    }
+  }
+}
+
+///|
 pub fn MaResolver::remaining_distance_to_eoa(
   self : MaResolver,
   current_pos : Double,
@@ -69,4 +87,25 @@ pub fn MaResolver::remaining_distance_to_eoa(
     Some(eoa) => eoa - current_pos
     None => 0.0
   }
+}
+
+///|
+fn is_valid_ma(ma : @types.MovementAuthority) -> Bool {
+  ma.is_valid &&
+  ma.timestamp_ms >= 0 &&
+  ma.start_position.is_nan() == false &&
+  ma.start_position.is_inf() == false &&
+  ma.eoa_position.is_nan() == false &&
+  ma.eoa_position.is_inf() == false &&
+  ma.overlap_distance.is_nan() == false &&
+  ma.overlap_distance.is_inf() == false &&
+  ma.target_speed.is_nan() == false &&
+  ma.target_speed.is_inf() == false &&
+  ma.route_speed_limit.is_nan() == false &&
+  ma.route_speed_limit.is_inf() == false &&
+  ma.start_position >= 0.0 &&
+  ma.eoa_position >= ma.start_position &&
+  ma.overlap_distance >= 0.0 &&
+  ma.target_speed >= 0.0 &&
+  ma.route_speed_limit >= 0.0
 }

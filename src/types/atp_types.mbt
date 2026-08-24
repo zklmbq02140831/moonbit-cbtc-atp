@@ -118,6 +118,49 @@ pub struct SystemConfig {
 } derive(Eq, Debug)
 
 ///|
+/// Construct configuration values for integration tests and controlled deployments.
+pub fn SystemConfig::new(
+  warn_margin : Double,
+  service_margin : Double,
+  emergency_margin : Double,
+  trip_margin : Double,
+  ma_timeout_ms : Int64,
+  odometer_slip_limit : Double,
+  rollback_distance_limit : Double,
+  redundancy_mode_2o2 : Bool,
+) -> SystemConfig {
+  {
+    overspeed_warn_margin: warn_margin,
+    service_brake_margin: service_margin,
+    emergency_brake_margin: emergency_margin,
+    trip_margin,
+    ma_timeout_ms,
+    odometer_slip_limit,
+    rollback_distance_limit,
+    redundancy_mode_2o2,
+  }
+}
+
+///|
+/// Validate threshold ordering and physical configuration ranges.
+pub fn SystemConfig::is_valid(self : SystemConfig) -> Bool {
+  config_finite(self.overspeed_warn_margin) &&
+  config_finite(self.service_brake_margin) &&
+  config_finite(self.emergency_brake_margin) &&
+  config_finite(self.trip_margin) &&
+  config_finite(self.odometer_slip_limit) &&
+  config_finite(self.rollback_distance_limit) &&
+  self.overspeed_warn_margin >= 0.0 &&
+  self.service_brake_margin >= self.overspeed_warn_margin &&
+  self.emergency_brake_margin >= self.service_brake_margin &&
+  self.trip_margin >= self.emergency_brake_margin &&
+  self.ma_timeout_ms > 0 &&
+  self.odometer_slip_limit >= 0.0 &&
+  self.odometer_slip_limit <= 1.0 &&
+  self.rollback_distance_limit >= 0.0
+}
+
+///|
 pub fn SystemConfig::default() -> SystemConfig {
   {
     overspeed_warn_margin: 1.38,
@@ -129,4 +172,9 @@ pub fn SystemConfig::default() -> SystemConfig {
     rollback_distance_limit: 0.5,
     redundancy_mode_2o2: true,
   }
+}
+
+///|
+fn config_finite(value : Double) -> Bool {
+  !value.is_nan() && !value.is_inf()
 }

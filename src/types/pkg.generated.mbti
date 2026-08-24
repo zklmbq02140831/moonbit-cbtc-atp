@@ -595,6 +595,8 @@ pub struct SystemConfig {
   redundancy_mode_2o2 : Bool
 } derive(Eq, @debug.Debug)
 pub fn SystemConfig::default() -> Self
+pub fn SystemConfig::is_valid(Self) -> Bool
+pub fn SystemConfig::new(Double, Double, Double, Double, Int64, Double, Double, Bool) -> Self
 
 pub struct TemporarySpeedRestriction {
   tsr_id : Int
@@ -706,6 +708,8 @@ pub fn TrainParams::default_freight() -> Self
 pub fn TrainParams::default_high_speed() -> Self
 pub fn TrainParams::default_metro() -> Self
 pub fn TrainParams::effective_mass_kg(Self) -> Double
+pub fn TrainParams::is_valid(Self) -> Bool
+pub fn TrainParams::new(Int, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double) -> Self
 
 pub struct TrainState {
   timestamp_ms : Int64

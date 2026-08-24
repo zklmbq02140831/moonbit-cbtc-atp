@@ -1,0 +1,99 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zklmbq02140831/moonbit-cbtc-atp/src/runtime"
+
+import {
+  "moonbitlang/core/debug",
+  "zklmbq02140831/moonbit-cbtc-atp/src/line_profile",
+  "zklmbq02140831/moonbit-cbtc-atp/src/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub enum AtpAction {
+  Continue
+  Warning
+  ServiceBrake
+  EmergencyBrake
+  FailSafeTrip
+} derive(Eq, @debug.Debug)
+pub fn AtpAction::code(Self) -> Int
+
+pub struct AtpCycleDecision {
+  action : AtpAction
+  trace : DecisionTrace
+  issues : Array[ValidationIssue]
+} derive(Eq, @debug.Debug)
+pub fn AtpCycleDecision::is_fail_safe(Self) -> Bool
+
+pub struct AtpCycleEngine {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn AtpCycleEngine::evaluate(Self, AtpCycleInput, @line_profile.StaticSpeedProfile, @line_profile.TsrManager, @line_profile.MaResolver, @types.RailCondition) -> AtpCycleDecision
+pub fn AtpCycleEngine::new(@types.SystemConfig, @types.TrainParams, Double, Double) -> Self
+
+pub struct AtpCycleInput {
+  position_m : Double
+  speed_mps : Double
+  odometer : @types.OdometerBounds
+  now_ms : Int64
+  channel_state_a : @types.TrainState
+  channel_state_b : @types.TrainState
+} derive(Eq, @debug.Debug)
+pub fn AtpCycleInput::new(Double, Double, @types.OdometerBounds, Int64, @types.TrainState, @types.TrainState) -> Self
+pub fn AtpCycleInput::validate(Self, Double, Double) -> Array[ValidationIssue]
+
+pub enum AtpReasonCode {
+  NormalCycle
+  OverspeedWarning
+  ServiceBrakeRequired
+  EmergencyBrakeRequired
+  TripBoundaryExceeded
+  MovementAuthorityUnavailable
+  InvalidInput
+  HardwareFault
+} derive(Eq, @debug.Debug)
+pub fn AtpReasonCode::code(Self) -> Int
+
+pub struct DecisionTrace {
+  position_m : Double
+  permitted_speed : Double
+  warning_speed : Double
+  service_brake_speed : Double
+  emergency_brake_speed : Double
+  trip_speed : Double
+  margin_to_eoa : Double
+  state : @types.ATPState
+  reason : AtpReasonCode
+} derive(Eq, @debug.Debug)
+
+pub struct ValidationIssue {
+  code : ValidationIssueCode
+} derive(Eq, @debug.Debug)
+pub fn ValidationIssue::new(ValidationIssueCode) -> Self
+
+pub enum ValidationIssueCode {
+  NegativePosition
+  NegativeSpeed
+  NegativeTimestamp
+  InvalidOdometerBounds
+  ChannelSpeedDisagreement
+  ChannelPositionDisagreement
+  NonFiniteInput
+  TimestampRollback
+  InvalidStaticSpeedProfile
+  InvalidChannelTimestamp
+  ChannelTimestampMismatch
+  SharedTelemetryDisagreement
+  MissingStaticSpeedCoverage
+  InvalidConfiguration
+  InvalidChannelOdometerBounds
+  UnsupportedDirection
+} derive(Eq, @debug.Debug)
+pub fn ValidationIssueCode::code(Self) -> Int
+
+// Type aliases
+
+// Traits

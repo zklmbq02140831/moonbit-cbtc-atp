@@ -22,6 +22,85 @@ pub fn StaticSpeedProfile::new(
 }
 
 ///|
+/// Validate all static profile geometry and speed values before supervision.
+pub fn StaticSpeedProfile::is_valid(self : StaticSpeedProfile) -> Bool {
+  if self.segments.length() == 0 {
+    return false
+  }
+  for i = 0; i < self.segments.length(); i = i + 1 {
+    let s = self.segments[i]
+    if !ssp_finite(s.start_pos) ||
+      !ssp_finite(s.end_pos) ||
+      !ssp_finite(s.max_speed) ||
+      s.start_pos < 0.0 ||
+      s.end_pos < s.start_pos ||
+      s.max_speed < 0.0 {
+      return false
+    }
+  }
+  for i = 0; i < self.gradients.length(); i = i + 1 {
+    let g = self.gradients[i]
+    if !ssp_finite(g.start_pos) ||
+      !ssp_finite(g.end_pos) ||
+      !ssp_finite(g.value) ||
+      g.start_pos < 0.0 ||
+      g.end_pos < g.start_pos {
+      return false
+    }
+  }
+  for i = 0; i < self.curvatures.length(); i = i + 1 {
+    let c = self.curvatures[i]
+    if !ssp_finite(c.start_pos) ||
+      !ssp_finite(c.end_pos) ||
+      !ssp_finite(c.radius) ||
+      !ssp_finite(c.cant) ||
+      c.start_pos < 0.0 ||
+      c.end_pos < c.start_pos ||
+      c.radius < 0.0 {
+      return false
+    }
+    if c.radius > 0.1 && c.cant < -110.0 {
+      return false
+    }
+  }
+  for i = 0; i < self.switches.length(); i = i + 1 {
+    let sw = self.switches[i]
+    if !ssp_finite(sw.position_m) ||
+      !ssp_finite(sw.normal_speed_limit) ||
+      !ssp_finite(sw.reverse_speed_limit) ||
+      sw.position_m < 0.0 ||
+      sw.normal_speed_limit < 0.0 ||
+      sw.reverse_speed_limit < 0.0 {
+      return false
+    }
+  }
+  true
+}
+
+///|
+/// Return whether a physical speed segment covers the supplied chainage.
+pub fn StaticSpeedProfile::has_physical_limit_at(
+  self : StaticSpeedProfile,
+  position : Double,
+) -> Bool {
+  if position.is_nan() || position.is_inf() || position < 0.0 {
+    return false
+  }
+  for i = 0; i < self.segments.length(); i = i + 1 {
+    let s = self.segments[i]
+    if position >= s.start_pos && position <= s.end_pos {
+      return true
+    }
+  }
+  false
+}
+
+///|
+fn ssp_finite(value : Double) -> Bool {
+  !value.is_nan() && !value.is_inf()
+}
+
+///|
 pub fn StaticSpeedProfile::get_physical_limit(
   self : StaticSpeedProfile,
   position : Double,
@@ -63,7 +142,11 @@ pub fn StaticSpeedProfile::get_curvature_speed_limit(
     if position >= c.start_pos && position <= c.end_pos {
       if c.radius > 0.1 {
         let effective_cant = if cant_mm > 0.0 { cant_mm } else { c.cant }
-        let limit_kmh = (c.radius * (effective_cant + 110.0) / 11.8).sqrt()
+        let radicand = c.radius * (effective_cant + 110.0)
+        if radicand.is_nan() || radicand.is_inf() || radicand <= 0.0 {
+          return 0.0
+        }
+        let limit_kmh = (radicand / 11.8).sqrt()
         let limit_mps = limit_kmh / 3.6
         return limit_mps
       }
